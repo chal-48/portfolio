@@ -1,0 +1,76 @@
+{
+  "isDemo": true,
+  "name": { "th": "ชื่อของคุณ", "en": "Your Name" },
+  "initials": "CE",
+  "portrait": null,
+  "role": { "th": "นักศึกษาวิศวกรรมคอมพิวเตอร์", "en": "Computer Engineering Student" },
+  "tagline": { "th": "ชอบเรียนรู้ และลงมือสร้างสิ่งใหม่", "en": "Curious by nature. A builder at heart." },
+  "bio": {
+    "th": "พื้นที่เล็ก ๆ สำหรับแนะนำตัว บอกเล่าสิ่งที่สนใจ และรวบรวมสิ่งที่ได้เรียนรู้จากการลงมือทำ ข้อความส่วนนี้จะเปลี่ยนเป็นเรื่องราวของคุณเมื่อได้รับรายละเอียดส่วนตัว",
+    "en": "A little corner of the internet to share interests, projects, and lessons learned along the way. This introduction will become your story once your personal details are added."
+  },
+  "goal": { "th": "เล่าเป้าหมายของคุณที่นี่ เช่น สายงานที่อยากพัฒนา ปัญหาที่อยากแก้ และสิ่งที่อยากเรียนรู้ต่อ", "en": "Share your goals here: the field you want to grow in, the problems you want to solve, and what you want to learn next." },
+  "education": {
+    "university": { "th": "ชื่อมหาวิทยาลัยของคุณ", "en": "Your University" },
+    "degree": { "th": "วิศวกรรมคอมพิวเตอร์", "en": "Computer Engineering" },
+    "year": null,
+    "gpa": null,
+    "period": { "th": "เพิ่มช่วงเวลาที่ศึกษา", "en": "Add your study period" },
+    "courses": [
+      { "th": "ตัวอย่าง: โครงสร้างข้อมูลและอัลกอริทึม", "en": "Example: Data Structures & Algorithms" },
+      { "th": "ตัวอย่าง: ระบบฐานข้อมูล", "en": "Example: Database Systems" },
+      { "th": "ตัวอย่าง: สถาปัตยกรรมคอมพิวเตอร์", "en": "Example: Computer Architecture" }
+    ]
+  },
+  "interests": [
+    { "th": "พัฒนาเว็บ", "en": "Web development" },
+    { "th": "ออกแบบระบบ", "en": "System design" },
+    { "th": "ระบบสมองกลฝังตัว", "en": "Embedded systems" }
+  ],
+  "email": null,
+  "github": null,
+  "linkedin": null,
+  "otherContacts": [],
+  "resume": {
+    "th": "/resume/resume-th.pdf",
+    "en": "/resume/resume-en.pdf"
+  },
+  "skills": [
+    { "id": "languages", "label": { "th": "ภาษาโปรแกรม", "en": "Languages" }, "description": { "th": "ภาษาที่ใช้สื่อสารแนวคิดให้คอมพิวเตอร์เข้าใจ", "en": "Turning ideas into instructions a computer understands." }, "items": ["Python", "JavaScript", "TypeScript", "C / C++"] },
+    { "id": "frameworks", "label": { "th": "Framework และไลบรารี", "en": "Frameworks & libraries" }, "description": { "th": "เครื่องมือสำหรับประกอบไอเดียให้เป็นแอปพลิเคชัน", "en": "The building blocks that bring applications to life." }, "items": ["React", "Node.js", "Tailwind CSS", "Express"] },
+    { "id": "databases", "label": { "th": "ฐานข้อมูล", "en": "Databases" }, "description": { "th": "จัดเก็บ ออกแบบ และเชื่อมโยงข้อมูลอย่างเป็นระบบ", "en": "Organizing data and making useful connections." }, "items": ["PostgreSQL", "MySQL", "SQLite"] },
+    { "id": "tools", "label": { "th": "เครื่องมือ", "en": "Tools & workflow" }, "description": { "th": "ตัวช่วยในการพัฒนา ทดสอบ และทำงานร่วมกัน", "en": "Making the process of building and collaborating smoother." }, "items": ["Git", "GitHub", "VS Code", "Docker", "Figma"] }
+  ],
+  "projects": [
+    {
+      "id": "campus-companion", "category": "web", "featured": true, "visual": "campus", "year": "DEMO",
+      "title": { "th": "Campus Companion", "en": "Campus Companion" },
+      "summary": { "th": "ตัวอย่างเว็บจัดการตารางเรียนและงานของนักศึกษา", "en": "An illustrative student planner for classes and assignments." },
+      "description": { "th": "ตัวอย่างสำหรับแสดงรูปแบบการเล่าโปรเจกต์: เว็บที่รวมตารางเรียน งานที่ต้องส่ง และข้อมูลสำคัญไว้ในที่เดียว เพื่อช่วยให้นักศึกษาจัดการเวลาได้สะดวกขึ้น", "en": "An example of how a project can be presented: a web app that brings schedules, assignments, and important information into one place to help students organize their time." },
+      "role": { "th": "ตัวอย่าง: ออกแบบ UI และพัฒนาฝั่ง Frontend", "en": "Example: UI design and frontend development" },
+      "responsibilities": [{ "th": "ออกแบบหน้า Dashboard และลำดับการใช้งาน", "en": "Design the dashboard and user flows" }, { "th": "พัฒนาระบบกรองและค้นหาข้อมูล", "en": "Build filtering and search interactions" }, { "th": "ปรับการแสดงผลให้รองรับมือถือ", "en": "Make the interface work across screen sizes" }],
+      "outcome": { "th": "เพิ่มผลลัพธ์จริงของคุณที่นี่ เช่น สิ่งที่ทำสำเร็จ ปัญหาที่แก้ได้ หรือบทเรียนจากโปรเจกต์", "en": "Add your actual outcome here: what you built, a problem you solved, or a lesson learned." },
+      "tech": ["React", "TypeScript", "Tailwind CSS"], "sourceUrl": null, "demoUrl": null
+    },
+    {
+      "id": "roomsense", "category": "iot", "featured": false, "visual": "sensor", "year": "DEMO",
+      "title": { "th": "RoomSense", "en": "RoomSense" },
+      "summary": { "th": "ตัวอย่างระบบเซนเซอร์และ Dashboard สำหรับห้องอัจฉริยะ", "en": "An illustrative sensor dashboard for a smarter room." },
+      "description": { "th": "ตัวอย่างโปรเจกต์ IoT ที่เชื่อมต่อเซนเซอร์เข้ากับ Dashboard เพื่อแสดงข้อมูลสภาพแวดล้อม ใช้เป็นแนวทางในการเล่าผลงานฮาร์ดแวร์และซอฟต์แวร์ของคุณ", "en": "An illustrative IoT project connecting sensors to an environmental dashboard. Use this structure to tell the story of your own hardware and software work." },
+      "role": { "th": "ตัวอย่าง: พัฒนา Firmware และเชื่อมต่อข้อมูล", "en": "Example: Firmware and data integration" },
+      "responsibilities": [{ "th": "อ่านค่าจากเซนเซอร์และจัดรูปแบบข้อมูล", "en": "Read sensors and structure their data" }, { "th": "เชื่อมต่ออุปกรณ์กับ Dashboard", "en": "Connect the device to a dashboard" }],
+      "outcome": { "th": "รอผลลัพธ์และรายละเอียดจากโปรเจกต์จริงของคุณ", "en": "Awaiting the outcome and details of your actual project." },
+      "tech": ["ESP32", "C++", "MQTT", "Python"], "sourceUrl": null, "demoUrl": null
+    },
+    {
+      "id": "tiny-cpu", "category": "systems", "featured": false, "visual": "chip", "year": "DEMO",
+      "title": { "th": "Tiny CPU", "en": "Tiny CPU" },
+      "summary": { "th": "ตัวอย่างการออกแบบหน่วยประมวลผลในวิชาดิจิทัล", "en": "An illustrative processor design for a digital systems course." },
+      "description": { "th": "ตัวอย่างการนำเสนอโปรเจกต์ด้านระบบดิจิทัล ครอบคลุมแนวคิด การออกแบบส่วนประกอบ และวิธีทดสอบการทำงาน", "en": "An example presentation for a digital systems project, covering the concept, component design, and how the design is tested." },
+      "role": { "th": "ตัวอย่าง: ออกแบบ Datapath และทดสอบคำสั่ง", "en": "Example: Datapath design and instruction testing" },
+      "responsibilities": [{ "th": "ออกแบบ ALU และชุด Register", "en": "Design an ALU and register set" }, { "th": "ทดสอบวงจรด้วย Simulation", "en": "Test the circuit through simulation" }],
+      "outcome": { "th": "รอผลลัพธ์และรายละเอียดจากโปรเจกต์จริงของคุณ", "en": "Awaiting the outcome and details of your actual project." },
+      "tech": ["Verilog", "Digital Logic", "Simulation"], "sourceUrl": null, "demoUrl": null
+    }
+  ]
+}

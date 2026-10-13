@@ -1,0 +1,137 @@
+import { test, expect } from '@playwright/test'
+
+test('language changes in place and persists across pages and reloads', async ({ page }) => {
+  await page.goto('/')
+  await expect(page.locator('html')).toHaveAttribute('lang','th')
+  await page.getByRole('button',{name:'EN',exact:true}).click()
+  await expect(page.getByRole('heading',{level:1})).toContainText('Your Name')
+  await page.getByRole('link',{name:'Explore my work',exact:true}).click()
+  await expect(page).toHaveURL('/projects')
+  await expect(page.getByRole('heading',{level:1})).toHaveText('Ideas, brought to life.')
+  await page.reload()
+  await expect(page.locator('html')).toHaveAttribute('lang','en')
+  await page.getByRole('button',{name:'TH',exact:true}).click()
+  await expect(page).toHaveURL('/projects')
+  await expect(page.getByRole('heading',{level:1})).toHaveText('ไอเดียที่กลายเป็นโปรเจกต์')
+})
+
+test('all five cards navigate to separate pages, back home restores the card position', async ({ page }, testInfo) => {
+  for (const chapter of ['about','skills','projects','resume','contact']) {
+    await page.goto('/')
+    const stage = page.locator('.orbit-stage')
+    await stage.scrollIntoViewIfNeeded()
+    if (testInfo.project.name==='desktop') await stage.hover({position:{x:400,y:25}})
+    await page.getByTestId(`orbit-${chapter}`).click()
+    await expect(page).toHaveURL(`/${chapter}`)
+    await expect(page.getByRole('heading',{level:1})).toBeVisible()
+    await page.getByRole('link',{name:'กลับหน้าหลัก',exact:true}).first().click()
+    await expect(page).toHaveURL('/')
+    await expect.poll(()=>page.evaluate(()=>window.scrollY)).toBeGreaterThan(250)
+  }
+})
+
+test('chapter navigation supports sequential reading and direct route refresh', async ({ page }) => {
+  await page.goto('/about')
+  await page.locator('.chapter-next').click()
+  await expect(page).toHaveURL('/skills')
+  await page.locator('.chapter-next').click()
+  await expect(page).toHaveURL('/projects')
+  await page.locator('.project-card').first().click()
+  await expect(page).toHaveURL('/projects/campus-companion')
+  await page.reload()
+  await expect(page.getByRole('heading',{level:1})).toHaveText('Campus Companion')
+  await page.getByRole('link',{name:'กลับไปดูโปรเจกต์',exact:true}).click()
+  await expect(page).toHaveURL('/projects')
+  await page.goto('/projects/missing-project')
+  await expect(page.getByRole('heading',{level:1})).toHaveText('หน้านี้ยังไม่มีในพอร์ต')
+  await page.goto('/missing')
+  await expect(page.getByRole('heading',{level:1})).toHaveText('หน้านี้ยังไม่มีในพอร์ต')
+})
+
+test('project filtering, search, empty results, and reset work together', async ({ page }) => {
+  await page.goto('/projects')
+  await expect(page.locator('.project-card')).toHaveCount(3)
+  await page.getByRole('button',{name:'IoT และฮาร์ดแวร์',exact:true}).click()
+  await expect(page.locator('.project-card')).toHaveCount(1)
+  await expect(page.locator('.project-card')).toContainText('RoomSense')
+  await page.getByRole('textbox',{name:'ค้นหาโปรเจกต์',exact:true}).fill('not-a-project')
+  await expect(page.locator('.project-card')).toHaveCount(0)
+  await expect(page.getByRole('heading',{name:'ยังไม่พบโปรเจกต์ที่ตรงกัน'})).toBeVisible()
+  await page.locator('.empty-state').getByRole('button',{name:'ล้างตัวกรอง'}).click()
+  await expect(page.locator('.project-card')).toHaveCount(3)
+  await page.getByRole('textbox',{name:'ค้นหาโปรเจกต์',exact:true}).fill('TypeScript')
+  await expect(page.locator('.project-card')).toHaveCount(1)
+  await page.getByRole('button',{name:'EN',exact:true}).click()
+  await expect(page.getByRole('textbox',{name:'Search projects'})).toHaveValue('TypeScript')
+  await expect(page.locator('.project-card')).toContainText('Campus Companion')
+})
+
+test('both resume downloads are actual PDFs and follow the selected language', async ({ page, request }) => {
+  for (const language of ['th','en']) {
+    const response = await request.get(`/resume/resume-${language}.pdf`)
+    expect(response.status()).toBe(200)
+    expect((await response.body()).subarray(0,5).toString()).toBe('%PDF-')
+  }
+  await page.goto('/resume')
+  const thDownload = page.waitForEvent('download')
+  await page.getByRole('link',{name:'ดาวน์โหลด Resume',exact:true}).click()
+  expect((await thDownload).suggestedFilename()).toBe('resume-th.pdf')
+  await page.getByRole('button',{name:'EN',exact:true}).click()
+  const enDownload = page.waitForEvent('download')
+  await page.getByRole('link',{name:'Download Resume',exact:true}).click()
+  expect((await enDownload).suggestedFilename()).toBe('resume-en.pdf')
+})
+
+test('contact validates input, keeps drafts while translating, and explains missing contact details', async ({ page }) => {
+  await page.goto('/contact')
+  await expect(page.getByRole('button',{name:'คัดลอกอีเมล',exact:true})).toBeDisabled()
+  await page.getByRole('button',{name:'เปิดแอปอีเมล',exact:true}).click()
+  await expect(page.getByText('กรุณากรอกชื่อ',{exact:true})).toBeVisible()
+  await expect(page.locator('#sender-name')).toBeFocused()
+  await page.locator('#sender-name').fill('Test Visitor')
+  await page.locator('#sender-email').fill('visitor@example.com')
+  await page.locator('#contact-subject').fill('A project idea')
+  await page.locator('#contact-message').fill('Hello, I would like to discuss a project with you.')
+  await page.getByRole('button',{name:'EN',exact:true}).click()
+  await expect(page.locator('#contact-message')).toHaveValue('Hello, I would like to discuss a project with you.')
+  await page.getByRole('button',{name:'Open email app',exact:true}).click()
+  await expect(page.locator('.form-status')).toContainText("The portfolio owner's email is needed")
+  await expect(page).toHaveURL('/contact')
+})
+
+test('menu closes with Escape and process tabs support keyboard navigation', async ({ page }) => {
+  await page.goto('/')
+  const menu = page.getByRole('button',{name:'เปิดเมนู',exact:true})
+  await menu.click()
+  await expect(page.locator('#site-menu')).toBeVisible()
+  await page.keyboard.press('Escape')
+  await expect(page.locator('#site-menu')).toHaveCount(0)
+  await expect(menu).toBeFocused()
+  await page.getByRole('tab',{name:'ทำความเข้าใจ',exact:true}).focus()
+  await page.keyboard.press('ArrowRight')
+  await expect(page.getByRole('tab',{name:'ออกแบบ',exact:true})).toHaveAttribute('aria-selected','true')
+  await expect(page.getByRole('tabpanel')).toContainText('ทำไอเดียให้เห็นภาพ')
+})
+
+test('cards work with keyboard and all pages fit a narrow screen without console errors', async ({ page },testInfo) => {
+  const errors: string[]=[]
+  page.on('pageerror',error=>errors.push(error.message))
+  await page.emulateMedia({reducedMotion:'reduce'})
+  await page.goto('/')
+  await page.getByTestId('orbit-about').focus()
+  await page.keyboard.press('ArrowRight')
+  await expect(page.getByTestId('orbit-skills')).toBeFocused()
+  await page.keyboard.press('Enter')
+  await expect(page).toHaveURL('/skills')
+  if (testInfo.project.name==='mobile') await page.setViewportSize({width:320,height:800})
+  for (const language of ['th','en']) {
+    for (const route of ['/','/about','/skills','/projects','/projects/roomsense','/resume','/contact']) {
+      await page.goto(route)
+      await page.getByRole('button',{name:language.toUpperCase(),exact:true}).click()
+      await expect(page.getByRole('heading',{level:1})).toBeVisible()
+      const overflow = await page.evaluate(()=>document.documentElement.scrollWidth-window.innerWidth)
+      expect(overflow,`${route} (${language}) overflow`).toBeLessThanOrEqual(1)
+    }
+  }
+  expect(errors).toEqual([])
+})
