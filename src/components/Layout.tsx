@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigationType } from 'react-router-dom'
 import { ArrowUp, ArrowUpRight, Menu, X } from 'lucide-react'
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion, useScroll, useSpring } from 'framer-motion'
 import { useLanguage } from '@/lib/i18n'
 import { chapters } from '@/lib/navigation'
 import { portfolio } from '@/content'
@@ -13,6 +13,8 @@ export function Header() {
   const location = useLocation()
   const trigger = useRef<HTMLButtonElement>(null)
   const container = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll()
+  const progress = useSpring(scrollYProgress, { stiffness: 170, damping: 28, mass: .45 })
   useEffect(() => { setOpen(false) }, [location.pathname])
   useEffect(() => {
     if (!open) return
@@ -22,7 +24,7 @@ export function Header() {
     document.addEventListener('pointerdown', onPointer)
     return () => { document.removeEventListener('keydown', onKey); document.removeEventListener('pointerdown', onPointer) }
   }, [open])
-  return <header className="site-header"><div className="header-inner">
+  return <header className="site-header"><motion.div className="scroll-progress" style={{ scaleX: progress }}/><div className="header-inner">
     <Link to="/" className="brand" aria-label={t('home')}><Logo /><span>PORTFOLIO <span className="brand-divider">/</span> 2026</span></Link>
     <div className="header-right"><div className="language-toggle" role="group" aria-label={t('language')}>
       {(['th', 'en'] as const).map(value => <button key={value} type="button" aria-pressed={language === value} onClick={() => setLanguage(value)} lang={value}>{value.toUpperCase()}</button>)}
@@ -34,7 +36,7 @@ export function Header() {
 
 export function SectionTabs() {
   const { t } = useLanguage()
-  return <nav className="section-tabs" aria-label={t('allSections')}>{chapters.map(chapter => <NavLink to={chapter.path} key={chapter.id} className={({ isActive }) => isActive ? 'section-tab active' : 'section-tab'}><small>{chapter.number}</small><span>{t(chapter.label)}</span></NavLink>)}</nav>
+  return <nav className="section-tabs" aria-label={t('allSections')}>{chapters.map(chapter => <NavLink to={chapter.path} key={chapter.id} className={({ isActive }) => isActive ? 'section-tab active' : 'section-tab'}>{({ isActive }) => <><small>{chapter.number}</small><span>{t(chapter.label)}</span>{isActive && <motion.i className="section-tab-indicator" layoutId="section-tab-indicator" transition={{ type: 'spring', stiffness: 420, damping: 34 }}/>}</>}</NavLink>)}</nav>
 }
 
 export function Footer() {
@@ -45,7 +47,7 @@ export function Footer() {
     update(); window.addEventListener('scroll', update, { passive: true })
     return () => window.removeEventListener('scroll', update)
   }, [])
-  return <><footer className="site-footer"><div><Logo /><span>PORTFOLIO INDEX</span></div><p>{t('footer')}</p><small>© {new Date().getFullYear()} · {t('footerNote')}</small></footer>{showTop && <button className="scroll-top icon-button" aria-label={t('scrollTop')} onClick={() => window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })}><ArrowUp size={18}/></button>}</>
+  return <><footer className="site-footer"><div><Logo /><span>PORTFOLIO INDEX</span></div><small>© {new Date().getFullYear()} · {t('footerNote')}</small></footer>{showTop && <button className="scroll-top icon-button" aria-label={t('scrollTop')} onClick={() => window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })}><ArrowUp size={18}/></button>}</>
 }
 
 const positions = new Map<string, number>()

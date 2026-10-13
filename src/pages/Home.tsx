@@ -13,13 +13,11 @@ const copy = {
     edition: 'PORTFOLIO / 2026',
     discipline: 'นักศึกษาวิศวกรรมคอมพิวเตอร์',
     role: 'FULL STACK DEVELOPER',
-    statement: 'พร้อมเรียนรู้ ลงมือสร้าง และรับความท้าทายใหม่',
     index: 'สารบัญ',
     instruction: 'วางเมาส์หรือใช้แป้นพิมพ์เพื่อดูตัวอย่าง',
     open: 'เปิดหัวข้อ',
     photo: 'พื้นที่สำหรับรูปถ่าย',
     replace: 'เพิ่มรูปของคุณภายหลัง',
-    available: 'พร้อมสำหรับโอกาสในการเรียนรู้',
     scroll: 'สำรวจหัวข้อ',
     previews: {
       about: 'ประวัติ การศึกษา และทิศทางที่ต้องการพัฒนาต่อ',
@@ -33,13 +31,11 @@ const copy = {
     edition: 'PORTFOLIO / 2026',
     discipline: 'Computer Engineering Student',
     role: 'FULL STACK DEVELOPER',
-    statement: 'Ready to learn, build, and take on new challenges.',
     index: 'Index',
     instruction: 'Hover or use the keyboard to preview each chapter.',
     open: 'Open chapter',
     photo: 'Portrait placeholder',
     replace: 'Add your photo later',
-    available: 'Open to learning opportunities',
     scroll: 'Explore the index',
     previews: {
       about: 'Background, education, and the direction I want to grow in.',
@@ -95,7 +91,7 @@ function ChapterPreview({ id, photoLabel, replaceLabel }: { id: ChapterId; photo
   return <div className="index-contact-preview">
     <span className="contact-pulse" />
     <Mail size={42} strokeWidth={1.25} />
-    <p>LET&apos;S<br />START A<br />CONVERSATION.</p>
+    <p>EMAIL<br />GITHUB<br />LINKEDIN</p>
     <ArrowDownRight size={54} strokeWidth={1.1} />
   </div>
 }
@@ -118,6 +114,19 @@ export default function Home() {
   const resetPreview = (event: PointerEvent<HTMLElement>) => {
     event.currentTarget.style.setProperty('--pointer-x', '0')
     event.currentTarget.style.setProperty('--pointer-y', '0')
+  }
+
+  const moveIndexRow = (event: PointerEvent<HTMLAnchorElement>) => {
+    const bounds = event.currentTarget.getBoundingClientRect()
+    event.currentTarget.style.setProperty('--spot-x', `${event.clientX - bounds.left}px`)
+    event.currentTarget.style.setProperty('--spot-y', `${event.clientY - bounds.top}px`)
+    event.currentTarget.style.setProperty('--row-x', ((event.clientX - bounds.left) / bounds.width - .5).toFixed(3))
+  }
+
+  const resetIndexRow = (event: PointerEvent<HTMLAnchorElement>) => {
+    event.currentTarget.style.setProperty('--spot-x', '50%')
+    event.currentTarget.style.setProperty('--spot-y', '50%')
+    event.currentTarget.style.setProperty('--row-x', '0')
   }
 
   const moveRowFocus = (event: KeyboardEvent<HTMLAnchorElement>, index: number) => {
@@ -144,10 +153,6 @@ export default function Home() {
           <span>{localize(portfolio.name)}</span>
           <strong>{content.role}</strong>
         </motion.h1>
-        <motion.div className="cover-statement" variants={{ hidden: { opacity: 0, y: 14 }, visible: { opacity: 1, y: 0 } }}>
-          <span className="availability-dot" aria-hidden="true" />
-          <p>{content.statement}</p>
-        </motion.div>
       </motion.div>
 
       <motion.div className="editorial-index-layout" initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .22, duration: .55 }}>
@@ -164,6 +169,8 @@ export default function Home() {
               onFocus={() => setActive(chapter.id)}
               onTouchStart={() => setActive(chapter.id)}
               onKeyDown={event => moveRowFocus(event, index)}
+              onPointerMove={moveIndexRow}
+              onPointerLeave={resetIndexRow}
             >
               <span className="index-number">{chapter.number}</span>
               <span className="index-title">{t(chapter.label)}</span>
@@ -185,7 +192,7 @@ export default function Home() {
       </motion.div>
 
       <div className="cover-footer">
-        <span><i />{content.available}</span>
+        <span className="cover-meter"><b>01</b><i><em /></i><b>05</b></span>
         <span>{content.scroll}<ArrowDownRight size={16} /></span>
       </div>
     </section>
