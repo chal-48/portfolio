@@ -7,6 +7,7 @@ import App from './App'
 import '@fontsource-variable/manrope'
 import '@fontsource-variable/noto-sans-thai'
 import './styles.css'
+import './editorial.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

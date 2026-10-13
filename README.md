@@ -1,6 +1,6 @@
 # Computer Engineering Portfolio
 
-พอร์ตโฟลิโอ React + TypeScript + Vite ตามแบบที่ตกลง: หน้าเปิดตัวโทนสว่างพร้อมการ์ดข้อมูลสั้น ๆ และ Orbit Card Stack ที่เปิดหน้าแยก 5 หัวข้อ รองรับภาษาไทยและอังกฤษ
+พอร์ตโฟลิโอ React + TypeScript + Vite ในแนว Clean Editorial หน้าแรกเป็น Interactive Editorial Index ที่เปิดหน้าแยก 5 หัวข้อ รองรับภาษาไทยและอังกฤษ
 
 ## เปิดดูในเครื่อง
 
@@ -21,15 +21,15 @@ node .tools/node_modules/pnpm/bin/pnpm.mjs dev
 
 ## หน้าที่มี
 
-- `/` หน้าแรกและการ์ดเลือกหัวข้อ
+- `/` หน้าปกและสารบัญโต้ตอบ About / Skills / Projects / Resume / Contact
 - `/about` แนะนำตัว ความสนใจ เป้าหมาย และการศึกษา
 - `/skills` ทักษะแบ่งตามหมวด
-- `/projects` ค้นหาและกรองโปรเจกต์
+- `/projects` แสดงโปรเจกต์แบบ Case Study Flip Stack ตามการเลื่อน
 - `/projects/:id` รายละเอียดแต่ละโปรเจกต์
 - `/resume` ปุ่มดาวน์โหลด Resume PDF ตามภาษาที่เลือก
 - `/contact` ช่องทางติดต่อ คัดลอกอีเมล และฟอร์มเปิดร่างในแอปอีเมล
 
-หน้ารายละเอียดมีเมนูหัวข้อ ปุ่มก่อนหน้า/ถัดไป และปุ่มกลับหน้าหลักซึ่งจำตำแหน่งที่เลื่อนไว้ ภาษาเลือกได้ทุกหน้าและจำด้วย localStorage รองรับมือถือ คีย์บอร์ด และการตั้งค่าลดแอนิเมชัน
+หน้ารายละเอียดมีเมนูหัวข้อ ปุ่มก่อนหน้า/ถัดไป และปุ่มกลับหน้าหลัก ภาษาเลือกได้ทุกหน้าและจำด้วย localStorage รองรับมือถือ คีย์บอร์ด และการตั้งค่าลดแอนิเมชัน สารบัญหน้าแรกเปลี่ยน preview เมื่อ hover หรือ focus และใช้ปุ่มลูกศรเลื่อนระหว่างหัวข้อได้
 
 ## ใส่ข้อมูลส่วนตัว
 
@@ -73,18 +73,18 @@ pnpm build
 pnpm test:e2e
 ```
 
-ชุดทดสอบตรวจการนำทางจริง การกลับไปตำแหน่งเดิม ภาษาและการจำค่า ค้นหา/กรอง ดาวน์โหลดไฟล์ PDF ฟอร์ม การใช้คีย์บอร์ด และหน้าจอเล็ก ใช้ Google Chrome ที่ติดตั้งในเครื่อง สามารถกำหนดพาธเบราว์เซอร์อื่นผ่าน `PORTFOLIO_BROWSER`
+ชุดทดสอบตรวจการนำทางจริง ภาษาและการจำค่า Flip Stack ดาวน์โหลดไฟล์ PDF ฟอร์ม การใช้คีย์บอร์ด และหน้าจอเล็ก ใช้ Google Chrome ที่ติดตั้งในเครื่อง สามารถกำหนดพาธเบราว์เซอร์อื่นผ่าน `PORTFOLIO_BROWSER`
 
 ไฟล์สำหรับเผยแพร่อยู่ใน `dist/` โปรเจกต์ใช้ BrowserRouter โฮสต์ต้องส่งเส้นทางหน้าเว็บกลับไป `index.html` มี `public/_redirects` สำหรับ Netlify/Cloudflare Pages และ `vercel.json` สำหรับ Vercel เตรียมไว้แล้ว ยังไม่ได้เผยแพร่หรือเชื่อมต่อบัญชีโฮสติ้ง
 
 ## คอมโพเนนต์และการออกแบบ
 
-Orbit Card Stack ติดตั้งจาก [Componentry](https://componentry.dev/docs/components/orbit-card-stack) ด้วยคำสั่งที่เลือก:
+Case Study Flip Stack ติดตั้งจาก [Componentry](https://componentry.dev/docs/components/case-study-flip-stack) แล้วปรับให้การ์ดแต่ละใบเชื่อมไปยังหน้ารายละเอียดโปรเจกต์:
 
 ```sh
-pnpm dlx shadcn@latest add @componentry/orbit-card-stack
+pnpm dlx shadcn@latest add @componentry/case-study-flip-stack
 ```
 
-ปรับคอมโพเนนต์ใน `src/components/ui/orbit-card-stack.tsx` ให้แสดงหัวข้อเท่านั้น เปิดหน้าแยกด้วยลิงก์จริง และใช้งานได้ด้วยคีย์บอร์ด บนหน้าจอเล็กจัดเป็นกริดให้เลือกได้ครบทุกหัวข้อ หน้าเปิดตัวใช้แนวทางจากภาพอ้างอิงล่าสุด จึงไม่มี Signature หรือ Case Study Flip Stack
+หน้าแรกอยู่ใน `src/pages/Home.tsx` และใช้สารบัญที่เขียนเฉพาะเว็บนี้แทนการ์ดสำเร็จรูป การจัดวางและ motion เพิ่มเติมอยู่ใน `src/editorial.css` ส่วน `src/components/ui/case-study-flip-stack.tsx` ใช้ในหน้า Projects เท่านั้น
 
-องค์ประกอบกราฟิกตัวอย่างของโปรเจกต์เขียนด้วย HTML/SVG ใน `src/components/visuals.tsx` เมื่อมีภาพผลงานจริงสามารถเปลี่ยนส่วนนี้ได้ สีและระยะอยู่ใน `src/styles.css` ข้อความระบบทั้งสองภาษาอยู่ใน `src/lib/i18n.tsx`
+ภาพชั่วคราวของโปรเจกต์อยู่ใน `public/project-placeholders/` และสามารถแทนที่ด้วย screenshot จริงได้ สีและระยะหลักของแนว Editorial อยู่ใน `src/editorial.css` ข้อความระบบทั้งสองภาษาอยู่ใน `src/lib/i18n.tsx`

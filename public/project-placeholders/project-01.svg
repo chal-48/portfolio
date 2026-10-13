@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 820" role="img" aria-labelledby="title desc">
+  <title id="title">Project image placeholder one</title>
+  <desc id="desc">Editorial orange grid placeholder ready to be replaced with a project screenshot.</desc>
+  <rect width="1200" height="820" fill="#ed6a2c"/>
+  <g fill="none" stroke="#171713" stroke-width="2" opacity=".28">
+    <path d="M0 164h1200M0 328h1200M0 492h1200M0 656h1200"/>
+    <path d="M200 0v820M400 0v820M600 0v820M800 0v820M1000 0v820"/>
+  </g>
+  <circle cx="600" cy="410" r="222" fill="#f3eee5"/>
+  <circle cx="600" cy="410" r="150" fill="none" stroke="#171713" stroke-width="3"/>
+  <path d="M460 410h280M600 270v280" stroke="#171713" stroke-width="3"/>
+  <text x="54" y="78" fill="#171713" font-family="Arial, sans-serif" font-size="26" letter-spacing="5">PROJECT IMAGE / 01</text>
+  <text x="54" y="772" fill="#171713" font-family="Arial, sans-serif" font-size="20" letter-spacing="3">REPLACE WITH YOUR WORK</text>
+</svg>

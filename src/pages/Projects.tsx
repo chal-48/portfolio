@@ -1,24 +1,50 @@
-import { Link, useParams, useSearchParams } from 'react-router-dom'
-import { Search, ArrowUpRight, ArrowLeft, ExternalLink, Github, FolderSearch, X } from 'lucide-react'
+import { Link, useParams } from 'react-router-dom'
+import { ArrowUpRight, ArrowLeft, ExternalLink, Github } from 'lucide-react'
 import { portfolio, safeExternalUrl } from '@/content'
 import { useLanguage } from '@/lib/i18n'
 import { PageHeading, DemoNote, ChapterNavigation } from '@/components/ui'
 import { ProjectVisual } from '@/components/visuals'
+import { CaseStudyFlipStack } from '@/components/ui/case-study-flip-stack'
 import NotFound from './NotFound'
 
-const categories = ['all', 'web', 'iot', 'systems'] as const
+const covers = [
+  '/project-placeholders/project-01.svg',
+  '/project-placeholders/project-02.svg',
+  '/project-placeholders/project-03.svg',
+]
+
+const flipColors = [
+  { background: '#e9672f', foreground: '#171713' },
+  { background: '#173b57', foreground: '#eef5f5' },
+  { background: '#d8d0c3', foreground: '#171713' },
+]
 
 export default function Projects() {
-  const { t, localize } = useLanguage()
-  const [params, setParams] = useSearchParams()
-  const search = params.get('search') ?? ''
-  const category = categories.find(value => value === params.get('category')) ?? 'all'
-  const filtered = portfolio.projects.filter(project => (category === 'all' || project.category === category) && [project.title.th, project.title.en, project.summary.th, project.summary.en, ...project.tech].join(' ').toLowerCase().includes(search.trim().toLowerCase()))
-  const update = (key: string, value: string) => { const next = new URLSearchParams(params); if (!value || value === 'all') next.delete(key); else next.set(key,value); setParams(next, { replace: true, preventScrollReset: true }) }
+  const { t, localize, language } = useLanguage()
+  const pageCopy = language === 'th' ? {
+    hint: 'เลื่อนเพื่อเปิดโปรเจกต์ถัดไป',
+    heading: 'ผลงานที่กำลังรอเรื่องราวจริงของคุณ',
+    end: 'เลือกโปรเจกต์เพื่ออ่านต่อ',
+    image: 'พื้นที่สำหรับภาพโปรเจกต์',
+  } : {
+    hint: 'Scroll to reveal the next project',
+    heading: 'Selected work, ready for your real stories.',
+    end: 'Choose a project to read more',
+    image: 'Project image placeholder',
+  }
+  const items = portfolio.projects.map((project, index) => ({
+    number: String(index + 1).padStart(2, '0'),
+    eyebrow: `${project.tech.slice(0, 2).join(' / ')} · ${project.year === 'DEMO' ? t('demo') : project.year}`,
+    title: localize(project.title),
+    description: localize(project.summary),
+    image: covers[index % covers.length],
+    imageAlt: `${pageCopy.image}: ${localize(project.title)}`,
+    background: flipColors[index % flipColors.length].background,
+    foreground: flipColors[index % flipColors.length].foreground,
+    href: `/projects/${project.id}`,
+  }))
   return <><PageHeading eyebrow={t('projectsEyebrow')} title={t('projectsTitle')} description={t('projectsIntro')}/><DemoNote/>
-    <div className="project-toolbar"><div className="filter-tabs" role="group" aria-label={t('projects')}>{categories.map(value => <button type="button" key={value} aria-pressed={category===value} className={category===value ? 'active' : ''} onClick={() => update('category',value)}>{t(value)}</button>)}</div><div className="search-field"><Search size={17}/><input aria-label={t('searchLabel')} placeholder={t('search')} value={search} onChange={event => update('search',event.target.value)}/>{search && <button className="icon-button" aria-label={t('clearFilters')} onClick={() => update('search','')}><X size={15}/></button>}</div></div>
-    <p className="result-count" role="status" aria-live="polite">{filtered.length} {t('results')}</p>
-    {filtered.length ? <div className="projects-grid">{filtered.map(project => <Link className="project-card" to={`/projects/${project.id}`} key={project.id}><ProjectVisual variant={project.visual}/><div className="project-card-copy"><div className="project-meta"><span>{t(categories.find(value => value === project.category) ?? 'web')}</span><span>{project.year === 'DEMO' ? t('demo') : project.year}</span></div><h2>{localize(project.title)}<ArrowUpRight size={21}/></h2><p>{localize(project.summary)}</p><div className="project-tech">{project.tech.slice(0,3).map(item => <span key={item}>{item}</span>)}</div><span className="project-read">{t('readProject')}<ArrowUpRight size={15}/></span></div></Link>)}</div> : <div className="empty-state"><FolderSearch size={36} strokeWidth={1.4}/><h2>{t('noResults')}</h2><p>{t('noResultsNote')}</p><button type="button" className="button button-light" onClick={() => setParams({})}>{t('clearFilters')}</button></div>}
+    <CaseStudyFlipStack className="portfolio-flip-stack" items={items} hint={pageCopy.hint} heading={pageCopy.heading} endLabel={pageCopy.end}/>
     <ChapterNavigation current="projects"/></>
 }
 

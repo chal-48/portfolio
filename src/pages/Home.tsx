@@ -1,40 +1,193 @@
-import { useRef, useState } from 'react'
+import { useRef, useState, type KeyboardEvent, type PointerEvent } from 'react'
 import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { ArrowDown, ArrowUpRight, ArrowRight, GraduationCap, Code2, Lightbulb } from 'lucide-react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { ArrowDownRight, ArrowUpRight, Download, Mail } from 'lucide-react'
 import { portfolio } from '@/content'
 import { useLanguage } from '@/lib/i18n'
-import { Avatar, ProjectVisual } from '@/components/visuals'
-import { OrbitNavigator } from '@/components/OrbitNavigator'
+import { chapters } from '@/lib/navigation'
 
-const stepKeys = [
-  { label: 'step1', title: 'step1Title', body: 'step1Body' },
-  { label: 'step2', title: 'step2Title', body: 'step2Body' },
-  { label: 'step3', title: 'step3Title', body: 'step3Body' },
-  { label: 'step4', title: 'step4Title', body: 'step4Body' },
-] as const
+type ChapterId = (typeof chapters)[number]['id']
+
+const copy = {
+  th: {
+    edition: 'PORTFOLIO / 2026',
+    discipline: 'นักศึกษาวิศวกรรมคอมพิวเตอร์',
+    role: 'FULL STACK DEVELOPER',
+    statement: 'พร้อมเรียนรู้ ลงมือสร้าง และรับความท้าทายใหม่',
+    index: 'สารบัญ',
+    instruction: 'วางเมาส์หรือใช้แป้นพิมพ์เพื่อดูตัวอย่าง',
+    open: 'เปิดหัวข้อ',
+    photo: 'พื้นที่สำหรับรูปถ่าย',
+    replace: 'เพิ่มรูปของคุณภายหลัง',
+    available: 'พร้อมสำหรับโอกาสในการเรียนรู้',
+    scroll: 'สำรวจหัวข้อ',
+    previews: {
+      about: 'ประวัติ การศึกษา และทิศทางที่ต้องการพัฒนาต่อ',
+      skills: 'ภาษา Framework ฐานข้อมูล และเครื่องมือที่ใช้งาน',
+      projects: 'ผลงานที่คัดเลือก บทบาท เทคโนโลยี และผลลัพธ์',
+      resume: 'ข้อมูลโดยสรุปในรูปแบบ PDF พร้อมดาวน์โหลด',
+      contact: 'Email, GitHub, LinkedIn และช่องทางพูดคุย',
+    },
+  },
+  en: {
+    edition: 'PORTFOLIO / 2026',
+    discipline: 'Computer Engineering Student',
+    role: 'FULL STACK DEVELOPER',
+    statement: 'Ready to learn, build, and take on new challenges.',
+    index: 'Index',
+    instruction: 'Hover or use the keyboard to preview each chapter.',
+    open: 'Open chapter',
+    photo: 'Portrait placeholder',
+    replace: 'Add your photo later',
+    available: 'Open to learning opportunities',
+    scroll: 'Explore the index',
+    previews: {
+      about: 'Background, education, and the direction I want to grow in.',
+      skills: 'Languages, frameworks, databases, and tools I work with.',
+      projects: 'Selected work, responsibilities, technology, and outcomes.',
+      resume: 'A concise PDF version of my background, ready to download.',
+      contact: 'Email, GitHub, LinkedIn, and a direct way to reach me.',
+    },
+  },
+} as const
+
+const projectCovers = [
+  '/project-placeholders/project-01.svg',
+  '/project-placeholders/project-02.svg',
+  '/project-placeholders/project-03.svg',
+]
+
+function ChapterPreview({ id, photoLabel, replaceLabel }: { id: ChapterId; photoLabel: string; replaceLabel: string }) {
+  if (id === 'about') return <div className="index-portrait-preview">
+    <div className="portrait-placeholder" aria-label={photoLabel}>
+      <span className="portrait-index">01</span>
+      <span className="portrait-initials">{portfolio.initials}</span>
+      <span className="portrait-label">{replaceLabel}</span>
+    </div>
+    <div className="portrait-rule"><span />{photoLabel}</div>
+  </div>
+
+  if (id === 'skills') return <div className="index-skills-preview">
+    {portfolio.skills.map((group, index) => <div className="skill-preview-row" key={group.id}>
+      <span>0{index + 1}</span>
+      <strong>{group.items.slice(0, 3).join(' / ')}</strong>
+      <i>{String(group.items.length).padStart(2, '0')}</i>
+    </div>)}
+    <div className="skill-preview-orbit" aria-hidden="true"><span /><span /><span /></div>
+  </div>
+
+  if (id === 'projects') return <div className="index-project-preview">
+    {projectCovers.map((src, index) => <div className={`project-sheet sheet-${index + 1}`} key={src}>
+      <img src={src} alt="" />
+      <span>0{index + 1}</span>
+    </div>)}
+  </div>
+
+  if (id === 'resume') return <div className="index-resume-preview">
+    <div className="resume-sheet">
+      <div className="resume-sheet-top"><span>CURRICULUM VITAE</span><Download size={18} /></div>
+      <strong>{portfolio.initials}</strong>
+      <div className="resume-lines"><span /><span /><span /><span /></div>
+      <small>PDF · A4 · 01 PAGE</small>
+    </div>
+  </div>
+
+  return <div className="index-contact-preview">
+    <span className="contact-pulse" />
+    <Mail size={42} strokeWidth={1.25} />
+    <p>LET&apos;S<br />START A<br />CONVERSATION.</p>
+    <ArrowDownRight size={54} strokeWidth={1.1} />
+  </div>
+}
 
 export default function Home() {
   const { t, localize, language } = useLanguage()
-  const [step, setStep] = useState(0)
-  const stepButtons = useRef<(HTMLButtonElement | null)[]>([])
-  const featured = portfolio.projects.find(project => project.featured) ?? portfolio.projects[0]
-  return <div className="home-page">
-    <motion.section className="hero" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .5 }}>
-      <p className="hero-kicker"><span className="status-dot" />{t('currently')}<span className="kicker-line"/>COMPUTER ENGINEERING</p>
-      <h1 id="page-title" tabIndex={-1}><span className="hero-intro">{t('greeting')} <Avatar /><span>{localize(portfolio.name)}{language === 'en' ? '.' : ''}</span></span><span className="hero-muted">{t('studentPrefix')}</span><span className="hero-last-line"><span className="accent-text">{t('engineering')}</span><span className="status-pill"><span className="status-dot"/>{t('availability')}</span></span></h1>
-      <div className="hero-bottom"><Link className="button button-dark" to="/projects">{t('viewWork')}<ArrowUpRight size={17}/></Link><p>{t('heroNote')}</p></div>
-    </motion.section>
+  const content = copy[language]
+  const [active, setActive] = useState<ChapterId>('projects')
+  const rowRefs = useRef<(HTMLAnchorElement | null)[]>([])
+  const activeChapter = chapters.find(chapter => chapter.id === active) ?? chapters[2]
 
-    <motion.section className="bento-grid" aria-label={t('about')} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .12, duration: .5 }}>
-      <Link className="bento-card education-bento" to="/about"><span className="bento-label">{t('education')}</span><div className="education-timeline"><div className="timeline-marker"/><div><small>{localize(portfolio.education.period)}</small><strong>{localize(portfolio.education.degree)}</strong><p>{localize(portfolio.education.university)}</p></div></div><span className="education-bottom"><GraduationCap size={23}/><ArrowUpRight size={17}/></span></Link>
-      <Link className="bento-card featured-bento" to={featured ? `/projects/${featured.id}` : '/projects'}><span className="bento-label">{portfolio.isDemo ? t('featured') : t('projects')}</span>{featured && <ProjectVisual variant={featured.visual} compact />}<span className="featured-caption"><strong>{featured ? localize(featured.title) : t('projects')}</strong><ArrowUpRight size={16}/></span></Link>
-      <div className="bento-card interests-bento"><span className="bento-label">{t('focus')}</span><div className="orbit-decoration" aria-hidden="true"><div/><div/><div/><span><Lightbulb size={25} strokeWidth={1.5}/></span><i/></div><div className="interest-preview">{portfolio.interests.slice(0,2).map(interest => <span key={interest.en}>{localize(interest)}</span>)}</div></div>
-      <Link className="bento-card learning-bento" to="/skills"><span className="bento-label">{t('learning')}</span><div className="code-decoration" aria-hidden="true"><span className="code-bracket">{'{'}</span><Code2 size={43} strokeWidth={1.3}/><span className="code-bracket">{'}'}</span></div><p>{t('learningNote')}</p><span className="learning-tags">React<span>·</span>Python<span>·</span>Git<ArrowUpRight size={15}/></span></Link>
-      <div className="bento-card process-bento"><span className="bento-label">{t('process')}</span><div className="process-copy" id="process-panel" role="tabpanel" aria-labelledby={`process-tab-${step}`}><span className="process-number">0{step+1}</span><h2>{t(stepKeys[step].title)}</h2><p>{t(stepKeys[step].body)}</p></div><div className="process-tabs" role="tablist" aria-label={t('process')}>{stepKeys.map((item,index) => <button key={item.label} type="button" id={`process-tab-${index}`} ref={element => { stepButtons.current[index] = element }} role="tab" aria-selected={step === index} aria-controls="process-panel" tabIndex={step === index ? 0 : -1} className={step === index ? 'active' : ''} onClick={() => setStep(index)} onKeyDown={event => { let next = index; if (event.key === 'ArrowRight') next = (index+1)%4; else if (event.key === 'ArrowLeft') next = (index+3)%4; else if (event.key === 'Home') next=0; else if (event.key === 'End') next=3; else return; event.preventDefault(); setStep(next); stepButtons.current[next]?.focus() }}>{t(item.label)}</button>)}</div></div>
-    </motion.section>
+  const movePreview = (event: PointerEvent<HTMLElement>) => {
+    const bounds = event.currentTarget.getBoundingClientRect()
+    const x = (event.clientX - bounds.left) / bounds.width - 0.5
+    const y = (event.clientY - bounds.top) / bounds.height - 0.5
+    event.currentTarget.style.setProperty('--pointer-x', x.toFixed(3))
+    event.currentTarget.style.setProperty('--pointer-y', y.toFixed(3))
+  }
 
-    <div className="explore-divider"><span/><a href="#explore" aria-label={t('exploreTitle')}><ArrowDown size={18}/></a><span/></div>
-    <section className="explore-section" id="explore"><p className="eyebrow">{t('exploreEyebrow')}</p><h2>{t('exploreTitle')}</h2><p className="section-description">{t('exploreNote')}</p><OrbitNavigator/><Link to="/contact" className="text-link explore-contact">{t('getInTouch')}<ArrowRight size={15}/></Link></section>
+  const resetPreview = (event: PointerEvent<HTMLElement>) => {
+    event.currentTarget.style.setProperty('--pointer-x', '0')
+    event.currentTarget.style.setProperty('--pointer-y', '0')
+  }
+
+  const moveRowFocus = (event: KeyboardEvent<HTMLAnchorElement>, index: number) => {
+    let next = index
+    if (event.key === 'ArrowDown' || event.key === 'ArrowRight') next = (index + 1) % chapters.length
+    else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') next = (index + chapters.length - 1) % chapters.length
+    else if (event.key === 'Home') next = 0
+    else if (event.key === 'End') next = chapters.length - 1
+    else return
+    event.preventDefault()
+    setActive(chapters[next].id)
+    rowRefs.current[next]?.focus()
+  }
+
+  return <div className="editorial-home">
+    <section className="editorial-cover" aria-labelledby="page-title">
+      <motion.div className="cover-heading" initial="hidden" animate="visible" variants={{ hidden: {}, visible: { transition: { staggerChildren: .075 } } }}>
+        <motion.div className="cover-meta" variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }}>
+          <span>{content.edition}</span>
+          <span className="cover-meta-line" />
+          <span>{content.discipline}</span>
+        </motion.div>
+        <motion.h1 id="page-title" tabIndex={-1} variants={{ hidden: { opacity: 0, y: 26 }, visible: { opacity: 1, y: 0 } }}>
+          <span>{localize(portfolio.name)}</span>
+          <strong>{content.role}</strong>
+        </motion.h1>
+        <motion.div className="cover-statement" variants={{ hidden: { opacity: 0, y: 14 }, visible: { opacity: 1, y: 0 } }}>
+          <span className="availability-dot" aria-hidden="true" />
+          <p>{content.statement}</p>
+        </motion.div>
+      </motion.div>
+
+      <motion.div className="editorial-index-layout" initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .22, duration: .55 }}>
+        <nav className="editorial-index" aria-label={t('allSections')}>
+          <div className="index-intro"><span>{content.index}</span><small>{content.instruction}</small></div>
+          <div className="index-rows">
+            {chapters.map((chapter, index) => <Link
+              to={chapter.path}
+              key={chapter.id}
+              ref={element => { rowRefs.current[index] = element }}
+              className={`index-row ${active === chapter.id ? 'is-active' : ''}`}
+              data-testid={`index-${chapter.id}`}
+              onMouseEnter={() => setActive(chapter.id)}
+              onFocus={() => setActive(chapter.id)}
+              onTouchStart={() => setActive(chapter.id)}
+              onKeyDown={event => moveRowFocus(event, index)}
+            >
+              <span className="index-number">{chapter.number}</span>
+              <span className="index-title">{t(chapter.label)}</span>
+              <span className="index-description">{content.previews[chapter.id]}</span>
+              <ArrowUpRight className="index-arrow" size={25} strokeWidth={1.35} />
+            </Link>)}
+          </div>
+        </nav>
+
+        <aside className="editorial-preview" onPointerMove={movePreview} onPointerLeave={resetPreview} aria-live="polite">
+          <div className="preview-topline"><span>{activeChapter.number} / 05</span><span>{content.open}</span></div>
+          <AnimatePresence mode="wait">
+            <motion.div className="preview-stage" key={active} initial={{ opacity: 0, y: 16, rotate: .4 }} animate={{ opacity: 1, y: 0, rotate: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: .26, ease: [0.22, 1, 0.36, 1] }}>
+              <ChapterPreview id={active} photoLabel={content.photo} replaceLabel={content.replace} />
+            </motion.div>
+          </AnimatePresence>
+          <div className="preview-caption"><strong>{t(activeChapter.label)}</strong><span>{content.previews[active]}</span></div>
+        </aside>
+      </motion.div>
+
+      <div className="cover-footer">
+        <span><i />{content.available}</span>
+        <span>{content.scroll}<ArrowDownRight size={16} /></span>
+      </div>
+    </section>
   </div>
 }

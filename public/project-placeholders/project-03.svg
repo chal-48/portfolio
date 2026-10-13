@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 820" role="img" aria-labelledby="title desc">
+  <title id="title">Project image placeholder three</title>
+  <desc id="desc">Warm neutral modular placeholder ready to be replaced with a project screenshot.</desc>
+  <rect width="1200" height="820" fill="#d8d0c3"/>
+  <g transform="translate(312 122)">
+    <rect width="576" height="576" fill="#171713"/>
+    <rect x="30" y="30" width="246" height="246" fill="#f4f0e8"/>
+    <rect x="300" y="30" width="246" height="96" fill="#ed6a2c"/>
+    <rect x="300" y="150" width="246" height="396" fill="#f4f0e8"/>
+    <rect x="30" y="300" width="96" height="246" fill="#173b57"/>
+    <rect x="150" y="300" width="126" height="246" fill="#ed6a2c"/>
+    <circle cx="423" cy="348" r="84" fill="none" stroke="#171713" stroke-width="3"/>
+    <path d="M339 348h168M423 264v168" stroke="#171713" stroke-width="3"/>
+  </g>
+  <text x="54" y="78" fill="#171713" font-family="Arial, sans-serif" font-size="26" letter-spacing="5">PROJECT IMAGE / 03</text>
+  <text x="54" y="772" fill="#171713" font-family="Arial, sans-serif" font-size="20" letter-spacing="3">REPLACE WITH YOUR WORK</text>
+</svg>
