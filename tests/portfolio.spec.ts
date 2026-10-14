@@ -74,9 +74,10 @@ test('both resume downloads are actual PDFs and follow the selected language', a
   expect((await enDownload).suggestedFilename()).toBe('resume-en.pdf')
 })
 
-test('contact validates input, keeps drafts while translating, and explains missing contact details', async ({ page }) => {
+test('contact validates input, keeps drafts while translating, and opens an addressed email draft', async ({ page }) => {
   await page.goto('/contact')
-  await expect(page.getByRole('button', { name: 'คัดลอกอีเมล', exact: true })).toBeDisabled()
+  await expect(page.getByRole('button', { name: 'คัดลอกอีเมล', exact: true })).toBeEnabled()
+  await expect(page.getByRole('link', { name: 'chalisa4824@gmail.com', exact: true })).toHaveAttribute('href', 'mailto:chalisa4824@gmail.com')
   await page.getByRole('button', { name: 'เปิดแอปอีเมล', exact: true }).click()
   await expect(page.getByText('กรุณากรอกชื่อ', { exact: true })).toBeVisible()
   await expect(page.locator('#sender-name')).toBeFocused()
@@ -86,9 +87,21 @@ test('contact validates input, keeps drafts while translating, and explains miss
   await page.locator('#contact-message').fill('Hello, I would like to discuss a project with you.')
   await page.getByRole('button', { name: 'EN', exact: true }).click()
   await expect(page.locator('#contact-message')).toHaveValue('Hello, I would like to discuss a project with you.')
+  const client = await page.context().newCDPSession(page)
+  await client.send('Page.enable')
+  const mailtoRequests: string[] = []
+  client.on('Page.frameRequestedNavigation', event => {
+    if (event.url.startsWith('mailto:')) mailtoRequests.push(event.url)
+  })
   await page.getByRole('button', { name: 'Open email app', exact: true }).click()
-  await expect(page.locator('.form-status')).toContainText("The portfolio owner's email is needed")
+  await expect.poll(() => mailtoRequests.length).toBe(1)
+  const draft = new URL(mailtoRequests[0])
+  expect(decodeURIComponent(draft.pathname)).toBe('chalisa4824@gmail.com')
+  expect(draft.searchParams.get('subject')).toBe('A project idea')
+  expect(draft.searchParams.get('body')).toBe('Hello, I would like to discuss a project with you.\n\nTest Visitor\nvisitor@example.com')
+  await expect(page.locator('.form-status')).toContainText('Your draft has been opened')
   await expect(page).toHaveURL('/contact')
+  await client.detach()
 })
 
 test('menu closes with Escape and editorial index supports arrow-key navigation', async ({ page }) => {
