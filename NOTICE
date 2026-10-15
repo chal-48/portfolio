@@ -1,0 +1,16 @@
+Chalisa Langchai — personal portfolio
+
+Based on itouSouta.me, created by itousouta15.
+Source: https://github.com/itousouta15/itouSouta.me
+Author: https://github.com/itousouta15
+Original license: Apache License, Version 2.0 (see LICENSE).
+
+The original layout, styling, decoration, fonts, icons, and motion settings
+are adapted for this portfolio. Modifications by Chalisa Langchai include
+personal information, projects, content, React/Vite and React Router
+integration, contact form, search, accessibility, responsive refinements,
+and a live GitHub calendar with custom contribution snake routing.
+
+Thanks to the original developer for sharing this project.
+
+Additional font and icon license notices are in public/third-party-notices.txt.

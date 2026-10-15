@@ -1,0 +1,45 @@
+{
+  "name": { "th": "ชาลิสา ลางชัย", "en": "Chalisa Langchai" },
+  "location": { "th": "กรุงเทพมหานคร ประเทศไทย", "en": "Bangkok, Thailand" },
+  "summary": {
+    "th": "นักศึกษาชั้นปีที่ 4 สาขาเทคโนโลยีวิศวกรรมอิเล็กทรอนิกส์ แขนงวิชาคอมพิวเตอร์ มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าพระนครเหนือ สนใจการพัฒนาซอฟต์แวร์แบบ Full Stack โดยเฉพาะระบบหลังบ้าน API และฐานข้อมูล มีประสบการณ์จากโครงการด้านเว็บแอปพลิเคชัน แอปพลิเคชันมือถือ และระบบฝังตัว ให้ความสำคัญกับการเรียนรู้ผ่านการลงมือทำ การแก้ปัญหาอย่างเป็นระบบ และการพัฒนาทักษะเพื่อรับความท้าทายใหม่",
+    "en": "Fourth-year Electronic Engineering Technology (Computer) student at King Mongkut’s University of Technology North Bangkok, with an interest in full-stack software development, particularly backend systems, APIs, and databases. Academic project experience spans web applications, mobile applications, and embedded systems. Focused on learning through hands-on development, solving problems systematically, and building the skills to take on new technical challenges."
+  },
+  "degree": { "th": "วิศวกรรมศาสตรบัณฑิต สาขาเทคโนโลยีวิศวกรรมอิเล็กทรอนิกส์ (คอมพิวเตอร์)", "en": "Bachelor of Engineering in Electronic Engineering Technology (Computer)" },
+  "coursework": {
+    "th": "Web Application Development, Database & Data Technology, Data Structures & Algorithms, Software Engineering, Linux OS & Administration, Cloud Computing (Azure), Computer Networks",
+    "en": "Web Application Development, Database & Data Technology, Data Structures & Algorithms, Software Engineering, Linux OS & Administration, Cloud Computing (Azure), Computer Networks"
+  },
+  "skills": [
+    { "label": { "th": "ภาษาโปรแกรม", "en": "Programming" }, "items": ["Python", "JavaScript", "Dart", "SQL", "PHP", "C / C++"] },
+    { "label": { "th": "เว็บและแอปพลิเคชัน", "en": "Web & Applications" }, "items": ["HTML", "CSS", "Node.js", "Express", "FastAPI", "Flutter", "React"] },
+    { "label": { "th": "ฐานข้อมูลและเครื่องมือ", "en": "Data & Tools" }, "items": ["PostgreSQL", "MySQL", "Cloud Firestore", "Firebase", "Supabase", "Git", "GitHub", "Linux"] },
+    { "label": { "th": "ระบบฝังตัว", "en": "Embedded Systems" }, "items": ["Raspberry Pi", "ROS 2", "Arduino", "Sensor Interfacing"] }
+  ],
+  "projectHighlights": {
+    "vanvan": {
+      "title": { "th": "VanVan — ระบบจองรถตู้", "en": "VanVan — Van Booking Web Application" },
+      "tech": ["JavaScript", "Node.js", "Express", "PostgreSQL", "Supabase"],
+      "bullets": [
+        { "th": "พัฒนาเว็บและ API สำหรับค้นหารอบรถ จองที่นั่ง และอัปโหลดหลักฐานการชำระเงิน พร้อมกระบวนการตรวจสอบโดยผู้ดูแลระบบ", "en": "Developed web and API workflows for schedule browsing, seat reservations, payment-slip uploads, and administrative booking verification." },
+        { "th": "ประยุกต์ใช้ Transaction และ Row Lock เพื่อจัดการจำนวนที่นั่ง ใช้ JWT และ bcrypt สำหรับระบบบัญชี และ Supabase Storage สำหรับจัดเก็บหลักฐาน", "en": "Used PostgreSQL transactions and row locks for seat availability, JWT and bcrypt for accounts, and Supabase Storage for payment slips." }
+      ]
+    },
+    "music-app": {
+      "title": { "th": "Music App — ระบบค้นหาเพลงและจัดการเพลย์ลิสต์", "en": "Music App — Music Discovery & Playlists" },
+      "tech": ["Flutter", "Dart", "Firebase", "Cloud Firestore", "Provider"],
+      "bullets": [
+        { "th": "พัฒนาแอปพลิเคชันค้นหาเพลงและเล่นเสียงตัวอย่างผ่าน iTunes Search API พร้อมจัดการสถานะการเล่นร่วมกันระหว่างหน้าจอด้วย Provider", "en": "Built music-search and audio-preview interfaces using the iTunes Search API, with Provider to share playback state across screens." },
+        { "th": "เชื่อมต่อ Firebase Authentication เพื่อจัดการบัญชีผู้ใช้ และ Cloud Firestore เพื่อจัดเก็บเพลย์ลิสต์และรายการเพลงรายบุคคล", "en": "Integrated Firebase Authentication for user accounts and Cloud Firestore for personal playlists and song collections." }
+      ]
+    },
+    "rpi-autonomous-boat": {
+      "title": { "th": "ต้นแบบเรือพ่นยาอัตโนมัติ — โครงงานปริญญานิพนธ์", "en": "Autonomous Agricultural Spraying Boat — Senior Project (In Progress)" },
+      "tech": ["Python", "Raspberry Pi", "ROS 2", "FastAPI", "WebSocket"],
+      "bullets": [
+        { "th": "อยู่ระหว่างพัฒนา API สำหรับจัดการเส้นทางและสถานะภารกิจ พร้อมส่งข้อมูลสถานะเรือผ่าน WebSocket ทุกหนึ่งวินาที", "en": "Developing mission-route and state APIs with FastAPI and publishing boat-state updates over WebSocket every second." },
+        { "th": "พัฒนาโหนด ROS 2 ประมวลผลระยะสิ่งกีดขวางจาก LiDAR และสคริปต์อ่าน GPS, AS5600 และทดสอบ PWM โดยยังอยู่ในขั้นทดสอบองค์ประกอบแยกส่วน", "en": "Developing a ROS 2 LiDAR-processing node and GPS, AS5600, and PWM test scripts; navigation and control components are not yet integrated end to end." }
+      ]
+    }
+  }
+}

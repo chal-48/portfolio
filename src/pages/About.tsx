@@ -1,16 +1,122 @@
-import { GraduationCap, ArrowUpRight, Map, BookOpen } from 'lucide-react'
+import type { CSSProperties } from 'react'
 import { Link } from 'react-router-dom'
 import { portfolio } from '@/content'
-import { useLanguage } from '@/lib/i18n'
-import { PageHeading, DemoNote, ChapterNavigation } from '@/components/ui'
-import { Avatar } from '@/components/visuals'
+import { PageHeading, ChapterNavigation } from '@/components/ui'
 
 export default function About() {
-  const { t, localize } = useLanguage()
-  return <><PageHeading eyebrow={t('aboutEyebrow')} title={t('aboutTitle')} description={t('aboutIntro')}/><DemoNote/>
-    <div className="about-grid"><section className="panel about-story"><Avatar large/><div><span className="eyebrow">{t('story')}</span><h2>{localize(portfolio.name)}</h2><span className="muted role-line">{localize(portfolio.role)}</span><p>{localize(portfolio.bio)}</p></div></section>
-      <section className="panel goals-panel"><span className="panel-icon"><Map size={20}/></span><h2>{t('goals')}</h2><p>{localize(portfolio.goal)}</p><Link className="text-link" to="/projects">{t('viewWork')}<ArrowUpRight size={16}/></Link></section>
-      <section className="panel education-panel"><div className="panel-heading"><span className="panel-icon"><GraduationCap size={21}/></span><h2>{t('education')}</h2></div><p className="eyebrow education-period">{localize(portfolio.education.period)}</p><h3>{localize(portfolio.education.university)}</h3><p className="muted">{localize(portfolio.education.degree)}</p><div className="education-stats"><div><small>{t('year')}</small><strong>{portfolio.education.year ?? t('pending')}</strong></div><div><small>{t('gpa')}</small><strong>{portfolio.education.gpa ?? t('pending')}</strong></div></div><h4><BookOpen size={15}/>{t('courses')}</h4><ul className="course-list">{portfolio.education.courses.map(course => <li key={course.en}>{localize(course)}</li>)}</ul></section>
-      <section className="panel interests-panel"><h2>{t('interests')}</h2><div className="interest-list">{portfolio.interests.map((interest,index) => <div key={interest.en}><span>0{index+1}</span><h3>{localize(interest)}</h3><ArrowUpRight size={17}/></div>)}</div></section>
-    </div><ChapterNavigation current="about"/></>
+  return (
+    <>
+      <PageHeading title="About Me" />
+      <div className="about-grid">
+        {/* ฝั่งซ้ายบน: ประวัติ + ชั้นปี/GPA */}
+        <section className="about-main">
+          <h2 className="about-lead">{portfolio.name.en}</h2>
+          {portfolio.bio.en.split(/\n\s*\n/).map(paragraph => (
+            <p className="about-p" key={paragraph}>
+              {paragraph.replaceAll('’', "'")}
+            </p>
+          ))}
+          <p className="about-p">{portfolio.goal.en}</p>
+          <div className="divider" />
+          <div className="stat-grid">
+            <div className="stat">
+              <div className="stat-k">MAJOR</div>
+              <div className="stat-v mono">Computer</div>
+            </div>
+            <div className="stat">
+              <div className="stat-k">STUDY YEAR</div>
+              <div className="stat-v mono">{portfolio.education.year}</div>
+            </div>
+            <div className="stat">
+              <div className="stat-k">GPA</div>
+              <div className="stat-v mono">{portfolio.education.gpa} / 4.00</div>
+            </div>
+          </div>
+        </section>
+
+        {/* ฝั่งขวาบน: Focus */}
+        <aside className="about-side">
+          <img
+            src="/project-placeholders/bg-about.jpg"
+            alt=""
+            className="about-banner-slot"
+          />
+          <div className="about-side-body">
+            <div className="label">Focus</div>
+            <p className="about-side-quote">Full-stack development</p>
+            <p className="about-side-v">
+              Backend systems, APIs
+              <br />
+              and databases.
+            </p>
+          </div>
+        </aside>
+
+        {/* ฝั่งซ้ายล่าง: แบนเนอร์ My projects */}
+        <Link to="/projects" className="mini-card mini-interest">
+          <img
+            src="/project-placeholders/bg-project.jpg"
+            alt=""
+            className="mini-interest-bg image-slot"
+            data-image-slot="about-project-background"
+          />
+          <div className="mini-kicker">PROJECTS</div>
+          <h2 className="mini-interest-title">My projects</h2>
+          <div className="mini-interest-stack" aria-hidden="true">
+            {portfolio.projects.map((project, index) => (
+              <img
+                key={project.id}
+                src={project.coverImage}
+                alt=""
+                className="mini-interest-stack-img"
+                data-image-slot={`about-project-${project.id}`}
+                style={{ '--i': index } as CSSProperties}
+              />
+            ))}
+          </div>
+          <span className="mini-arrow" aria-hidden="true">↗</span>
+        </Link>
+
+
+        <section className="mini-card mini-music">
+          <div className="mini-interest-bg image-slot" data-image-slot="about-interest-background" />
+          <div className="mini-kicker">INTERESTS</div>
+          <h2 className="mini-interest-title">Development</h2>
+          <ul className="about-interest-list">
+            {portfolio.interests.map(interest => (
+              <li key={interest.en}>{interest.en}</li>
+            ))}
+          </ul>
+        </section>
+
+        {/* ฝั่งขวาล่าง: Education 3 ระดับ */}
+        <section className="mini-card about-education">
+          <div className="mini-kicker">EDUCATION</div>
+          <h2 className="mini-interest-title">Education</h2>
+          <div className="edu-list">
+            <div className="edu-item">
+              <div className="edu-level">Bachelor's Degree</div>
+              <h3>King Mongkut's University of Technology North Bangkok</h3>
+              <p>
+                Electronics Engineering Technology - Computer
+                <br />
+                2023 - Expected 2027
+              </p>
+            </div>
+            <div className="edu-item">
+              <div className="edu-level">Senior High School</div>
+              <h3>Ngammuangwittayakhom School</h3>
+              <p>2020 - 2023 </p>
+            </div>
+            <div className="edu-item">
+              <div className="edu-level">Junior High School</div>
+              <h3>Ngammuangwittayakhom School</h3>
+              <p>2017 - 2020 </p>
+            </div>
+          </div>
+        </section>
+      </div>
+      <ChapterNavigation current="about" />
+    </>
+  )
 }

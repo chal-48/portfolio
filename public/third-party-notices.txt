@@ -1,28 +1,37 @@
-Componentry — Orbit Card Stack
-Source: https://github.com/harshjdhv/componentry
-Adapted for this portfolio's chapter navigation.
+Chalisa Langchai — personal portfolio
 
-MIT License
+Based on itouSouta.me, created by itousouta15.
+Source: https://github.com/itousouta15/itouSouta.me
+Author: https://github.com/itousouta15
+Original license: Apache License, Version 2.0 (see LICENSE).
 
-Copyright (c) 2026 Harsh Jadhav
+The original layout, styling, decoration, fonts, icons, and motion settings
+are adapted for this portfolio. Modifications by Chalisa Langchai include
+personal information, projects, content, React/Vite and React Router
+integration, contact form, search, accessibility, responsive refinements,
+and a live GitHub calendar with custom contribution snake routing.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Thanks to the original developer for sharing this project.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+Additional font and icon license notices are in public/third-party-notices.txt.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+This portfolio website is based on itouSouta.me, created by itousouta15.
+I use the original website as the base for my personal portfolio. I have
+changed the personal information, projects, and content to make it my own.
+Thanks to the original developer for sharing this project.
 
-Fonts: Noto Sans Thai and Manrope are distributed under the SIL Open Font
-License. Their license files are included alongside the font assets.
+Full original license: /licenses/itouSouta-Apache-2.0.txt
+
+Noto Sans TC, JetBrains Mono and Shippori Mincho Latin webfonts:
+SIL Open Font License. Full licenses: /licenses/OFL-*.txt
+
+ChenYuLuoYan-subset.woff2 is retained unmodified from the reference.
+Copyright (c) 2022, Wang, Li-Yu & Liu, Wei-Chen.
+Full license: /licenses/OFL-ChenYuluoyan.txt
+
+Noto Sans Thai and Noto Serif Thai are used by the resume generator.
+Full licenses: /fonts/OFL-NotoSansThai.txt and /fonts/OFL-NotoSerifThai.txt
+
+Technology icons: Devicon SVGs retained unmodified from the reference.
+Project: https://github.com/devicons/devicon
+Full license: /licenses/Devicon-MIT.txt

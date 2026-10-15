@@ -1,19 +1,12 @@
 import { Link } from 'react-router-dom'
-import { ArrowLeft, ArrowRight, ArrowUpRight, Sparkles } from 'lucide-react'
+import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n'
-import { portfolio } from '@/content'
 import { chapters } from '@/lib/navigation'
 import type { ReactNode } from 'react'
 
-export function DemoNote({ compact = false }: { compact?: boolean }) {
+export function PageHeading({ title, action }: { title: string; action?: ReactNode }) {
   const { t } = useLanguage()
-  if (!portfolio.isDemo) return null
-  return <div className={`demo-note ${compact ? 'demo-note-compact' : ''}`}><Sparkles size={14} aria-hidden="true" /><span>{compact ? t('demo') : t('demoNote')}</span></div>
-}
-
-export function PageHeading({ eyebrow, title, description, action }: { eyebrow: string; title: string; description: string; action?: ReactNode }) {
-  const { t } = useLanguage()
-  return <div className="page-heading"><Link className="back-link" to="/" state={{ restoreHome: true }}><ArrowLeft size={16} />{t('back')}</Link><div className="page-heading-content"><div><p className="eyebrow">{eyebrow}</p><h1 id="page-title" tabIndex={-1}>{title}</h1><p className="page-description">{description}</p></div>{action}</div></div>
+  return <div className="page-head"><Link className="back-btn" to="/" state={{ restoreHome: true }} aria-label={t('back')}><ArrowLeft size={18}/></Link><div><h1 className="page-title" id="page-title" tabIndex={-1}>{title}</h1></div>{action}</div>
 }
 
 export function ChapterNavigation({ current }: { current: string }) {

@@ -1,87 +1,151 @@
-import { readFile, writeFile, mkdir, access } from 'node:fs/promises'
-import { fileURLToPath } from 'node:url'
+import { readFile, writeFile, mkdir } from 'node:fs/promises'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import path from 'node:path'
-import { PDFDocument, rgb } from 'pdf-lib'
-import fontkit from '@pdf-lib/fontkit'
+import { chromium } from '@playwright/test'
+import { PDFDocument } from 'pdf-lib'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
-const fonts = path.join(root, 'public', 'fonts')
-const output = path.join(root, 'public', 'resume')
-await mkdir(fonts, { recursive: true })
-await mkdir(output, { recursive: true })
-const fontPath = path.join(fonts, 'NotoSansThai.ttf')
-try { await access(fontPath) } catch {
-  if (!process.argv.includes('--fetch-fonts')) throw new Error('Font missing. Run pnpm resume -- --fetch-fonts once to download the licensed font.')
-  for (const [filename, url] of [
-    ['NotoSansThai.ttf', 'https://raw.githubusercontent.com/google/fonts/main/ofl/notosansthai/NotoSansThai%5Bwdth,wght%5D.ttf'],
-    ['OFL-NotoSansThai.txt', 'https://raw.githubusercontent.com/google/fonts/main/ofl/notosansthai/OFL.txt'],
-  ]) {
-    const response = await fetch(url)
-    if (!response.ok) throw new Error(`Font download failed: ${response.status} ${url}`)
-    await writeFile(path.join(fonts, filename), Buffer.from(await response.arrayBuffer()))
-  }
-}
-
 const data = JSON.parse(await readFile(path.join(root, 'src/content/portfolio.json'), 'utf8'))
-const fontBytes = await readFile(fontPath)
-const labels = {
-  th: { about: 'เกี่ยวกับฉัน', education: 'การศึกษา', skills: 'ทักษะ', projects: 'โปรเจกต์', contact: 'ติดต่อ', sample: 'เอกสารตัวอย่าง — ข้อมูลส่วนตัวและผลงานยังเป็นตัวอย่าง', pending: 'รอเพิ่มข้อมูล', role: 'บทบาท', goals: 'เป้าหมาย' },
-  en: { about: 'ABOUT ME', education: 'EDUCATION', skills: 'TECHNICAL SKILLS', projects: 'PROJECTS', contact: 'CONTACT', sample: 'SAMPLE DOCUMENT — personal details and projects are illustrative.', pending: 'To be added', role: 'Role', goals: 'GOALS' },
+const resume = JSON.parse(await readFile(path.join(root, 'src/content/resume.json'), 'utf8'))
+const output = path.join(root, 'public/resume')
+const previews = path.join(root, 'artifacts')
+await mkdir(output, { recursive: true })
+await mkdir(previews, { recursive: true })
+const thaiFont = (await readFile(path.join(root, 'public/fonts/NotoSansThai.ttf'))).toString('base64')
+const requestedLanguage = process.argv.find(arg => arg.startsWith('--language='))?.split('=')[1]
+if (requestedLanguage && !['th', 'en'].includes(requestedLanguage)) throw new Error('Language must be th or en')
+const languages = requestedLanguage ? [requestedLanguage] : ['th', 'en']
+let embeddedFontFaces = ''
+{
+  const serif = languages.includes('th') ? (await readFile(path.join(root, 'public/fonts/NotoSerifThai.ttf'))).toString('base64') : null
+  const cambriaRegular = (await readFile(process.env.RESUME_CAMBRIA_REGULAR || 'C:/Windows/Fonts/cambria.ttc')).toString('base64')
+  const cambriaBold = (await readFile(process.env.RESUME_CAMBRIA_BOLD || 'C:/Windows/Fonts/cambriab.ttf')).toString('base64')
+  embeddedFontFaces = `
+    @font-face { font-family: ResumeCambria; src: url(data:font/collection;base64,${cambriaRegular}) format('truetype'); font-weight: 400; }
+    @font-face { font-family: ResumeCambria; src: url(data:font/ttf;base64,${cambriaBold}) format('truetype'); font-weight: 700; }
+    ${serif ? `@font-face { font-family: ResumeThaiSerif; src: url(data:font/ttf;base64,${serif}) format('truetype'); font-weight: 100 900; }` : ''}
+  `
 }
-const ink = rgb(.16,.17,.14)
-const muted = rgb(.43,.46,.39)
-const accent = rgb(.85,.42,.19)
-
-for (const language of ['th', 'en']) {
-  const doc = await PDFDocument.create()
-  doc.registerFontkit(fontkit)
-  const font = await doc.embedFont(fontBytes, { subset: true })
-  doc.setTitle(`${data.name[language]} — Resume (${language.toUpperCase()})`)
-  doc.setSubject(data.isDemo ? labels[language].sample : data.role[language])
-  doc.setAuthor(data.isDemo ? 'Sample Portfolio' : data.name[language])
-  doc.setLanguage(language)
-  let page = doc.addPage([595.28,841.89])
-  let y = 789
-  const width = 493
-  const line = (text, size=10, color=ink) => {
-    if (y < 57) { page = doc.addPage([595.28,841.89]); y=790 }
-    page.drawText(text, { x: 51, y, size, font, color })
-    y-=size*1.7
+const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char])
+const safeLink = value => {
+  try { return new URL(value).protocol === 'https:' ? value : null } catch { return null }
+}
+const labels = {
+  th: { summary: 'ประวัติโดยสรุป', education: 'การศึกษา', skills: 'ทักษะทางเทคนิค', projects: 'โครงการ', courses: 'รายวิชาที่เกี่ยวข้อง', code: 'โค้ด', demo: 'เว็บสาธิต' },
+  en: { summary: 'SUMMARY', education: 'EDUCATION', skills: 'TECHNICAL SKILLS', projects: 'ACADEMIC PROJECTS', courses: 'Relevant Coursework', code: 'Source', demo: 'Live Demo' },
+}
+const browser = await chromium.launch({ executablePath: process.env.PORTFOLIO_BROWSER || 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true })
+try {
+  for (const language of languages) {
+    const l = labels[language]
+    const local = value => escape(value[language])
+    const section = (title, content) => `<section><h2>${escape(title)}</h2>${content}</section>`
+    const projects = data.projects.map(project => {
+      const highlight = resume.projectHighlights[project.id]
+      if (!highlight) throw new Error(`Missing resume highlights: ${project.id}`)
+      const links = [
+        safeLink(project.sourceUrl) && `<a href="${escape(project.sourceUrl)}">${l.code}</a>`,
+        safeLink(project.demoUrl) && `<a href="${escape(project.demoUrl)}">${l.demo}</a>`,
+      ].filter(Boolean).join(' · ')
+      return `<article><div class="project-title"><h3>${local(highlight.title)}</h3><span class="project-links">${links}</span></div><p class="technologies">${escape(highlight.tech.join(' · '))} <span class="year">| ${escape(project.year)}</span></p><ul>${highlight.bullets.map(bullet => `<li>${local(bullet)}</li>`).join('')}</ul></article>`
+    }).join('')
+    const github = safeLink(data.github)
+    const html = `<!doctype html><html lang="${language}"><head><meta charset="UTF-8"><title>${escape(resume.name.en)} — Resume (${language.toUpperCase()})</title><style>
+      @font-face { font-family: ResumeThai; src: url(data:font/ttf;base64,${thaiFont}) format('truetype'); font-weight: 100 900; }
+      @page { size: A4; margin: 13mm 15mm; }
+      * { box-sizing: border-box; }
+      html { font-family: ${language === 'th' ? 'ResumeThai, Arial' : 'Arial, sans-serif'}; color: #202020; background: white; font-size: 11pt; line-height: ${language === 'th' ? '1.55' : '1.4'}; }
+      body { margin: 0; }
+      main { width: 180mm; }
+      header { text-align: center; padding-bottom: 10px; }
+      h1 { font-size: 23pt; line-height: 1.2; font-weight: 750; margin: 0 0 9px; letter-spacing: .035em; }
+      .contact { font-size: 9.2pt; color: #393939; margin: 0; }
+      a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+      section { border-top: .8pt solid #444; padding-top: 7px; margin-top: 9px; }
+      h2 { font-size: 11.2pt; font-weight: 750; margin: 0 0 6px; line-height: 1.3; letter-spacing: ${language === 'th' ? '0' : '.05em'}; }
+      h3, p { margin: 0; }
+      h3 { font-size: 10.5pt; font-weight: 700; line-height: 1.4; }
+      .education-heading { display: flex; gap: 14px; align-items: baseline; justify-content: space-between; }
+      .education-heading h3 { max-width: 74%; }
+      .period { white-space: nowrap; font-size: 9pt; }
+      .university { margin-top: 3px; }
+      .courses { margin-top: 5px; font-size: 9.8pt; }
+      .skill-row { font-size: 10pt; margin-bottom: 2px; }
+      article { margin-top: 9px; break-inside: avoid; }
+      article:first-of-type { margin-top: 0; }
+      .project-title { display: flex; align-items: baseline; gap: 10px; justify-content: space-between; }
+      .project-title h3 { flex: 1; }
+      .project-links { white-space: nowrap; font-size: 8.2pt; }
+      .technologies { font-size: 9.5pt; color: #4a4a4a; margin-top: 2px; }
+      .year { color: #555; }
+      ul { padding-left: 15px; margin: 4px 0 0; }
+      li { padding-left: 1px; margin: 1px 0; }
+      ${embeddedFontFaces}
+      ${language === 'th' ? `
+        html { font-family: ResumeCambria, ResumeThaiSerif, serif; font-size: 11.5pt; font-weight: 400; line-height: 1.43; color: #171717; }
+        main { min-height: 267mm; display: flex; flex-direction: column; justify-content: space-between; }
+        header { padding-bottom: 0; }
+        h1 { font-size: 22pt; font-weight: 700; letter-spacing: 0; margin-bottom: 8px; }
+        h2 { font-size: 15pt; font-weight: 700; line-height: 1.3; margin-bottom: 6px; }
+        h3 { font-size: 14pt; font-weight: 700; line-height: 1.3; }
+        strong { font-weight: 700; }
+        .contact, .period { font-size: 10.5pt; }
+        .courses, .skill-row { font-size: 10.5pt; font-weight: 400; }
+        .technologies, .project-links { font-size: 10pt; font-weight: 400; }
+        .courses { line-height: 1.45; }
+        section { padding-top: 7px; margin-top: 8px; }
+        article { margin-top: 11px; }
+        .education-heading { display: block; }
+        .education-heading h3 { max-width: none; font-size: 12pt; }
+        .period { display: block; margin-top: 3px; }
+        ul { margin-top: 4px; }
+        li { font-weight: 400; text-align: justify; text-justify: inter-word; }
+        section > p:not(.skill-row) { text-align: justify; text-justify: inter-word; }
+      ` : `
+        /* English resume: font family, point sizes, and weights. */
+        html { font-family: ResumeCambria, Cambria, serif; font-size: 11.5pt; font-weight: 400; line-height: 1.42; color: #171717; }
+        main { min-height: 267mm; display: flex; flex-direction: column; justify-content: space-between; }
+        header { padding-bottom: 0; }
+        h1 { font-size: 22pt; font-weight: 700; letter-spacing: .02em; margin-bottom: 8px; }
+        h2 { font-size: 15pt; font-weight: 700; line-height: 1.3; margin-bottom: 6px; letter-spacing: .03em; }
+        h3 { font-size: 14pt; font-weight: 700; line-height: 1.3; }
+        strong { font-weight: 700; }
+        .education-heading h3 { font-size: 12pt; }
+        .contact, .period, .courses, .skill-row { font-size: 10.5pt; }
+        .technologies, .project-links { font-size: 10pt; font-weight: 400; }
+        section { padding-top: 7px; margin-top: 8px; }
+        article { margin-top: 10px; }
+        li { font-weight: 400; text-align: justify; }
+        section > p:not(.skill-row) { text-align: justify; }
+      `}
+    </style></head><body><main>
+      <header><h1>${local(resume.name)}</h1><p class="contact">${local(resume.location)} &nbsp;|&nbsp; <a href="mailto:${escape(data.email)}">${escape(data.email)}</a>${github ? ` &nbsp;|&nbsp; <a href="${escape(github)}">${escape(github.replace(/^https:\/\//, ''))}</a>` : ''}</p></header>
+      ${section(l.summary, `<p>${local(resume.summary)}</p>`)}
+      ${section(l.education, `<div class="education-heading"><h3>${local(resume.degree)}</h3><span class="period">${local(data.education.period)}</span></div><p class="university">${local(data.education.university)}</p><p>GPA: ${escape(data.education.gpa)}/4.00</p><p class="courses"><strong>${l.courses}:</strong> ${local(resume.coursework)}</p>`)}
+      ${section(l.skills, resume.skills.map(group => `<p class="skill-row"><strong>${local(group.label)}:</strong> ${escape(group.items.join(', '))}</p>`).join(''))}
+      ${section(l.projects, projects)}
+    </main></body></html>`
+    const htmlPath = path.join(previews, `resume-${language}.html`)
+    await writeFile(htmlPath, html, 'utf8')
+    const page = await browser.newPage({ viewport: { width: 794, height: 1123 }, deviceScaleFactor: 1.5 })
+    await page.goto(pathToFileURL(htmlPath).href)
+    await page.evaluate(() => document.fonts.ready)
+    await page.emulateMedia({ media: 'print' })
+    const height = await page.locator('main').evaluate(element => element.getBoundingClientRect().height)
+    const available = (297 - 26) * 96 / 25.4
+    if (height > available) throw new Error(`Resume ${language} exceeds one A4 page: ${height.toFixed(1)} > ${available.toFixed(1)} px`)
+    const pdfPath = path.join(output, `resume-${language}.pdf`)
+    const bytes = await page.pdf({ preferCSSPageSize: true, printBackground: true, tagged: true })
+    const pdf = await PDFDocument.load(bytes)
+    if (pdf.getPageCount() !== 1) throw new Error(`Resume ${language} must fit one page`)
+    pdf.setTitle(`${resume.name.en} — Resume (${language.toUpperCase()})`)
+    pdf.setAuthor(resume.name.en)
+    pdf.setSubject('Full Stack Software Development Portfolio')
+    pdf.setLanguage(language)
+    await writeFile(pdfPath, await pdf.save())
+    await page.close()
+    console.log(`Created ${path.relative(root, pdfPath)} (content: ${height.toFixed(0)} / ${available.toFixed(0)} px)`)
   }
-  const wrap = (text, size=10, color=muted) => {
-    const units = [...new Intl.Segmenter(language, { granularity: 'word' }).segment(text)].map(part=>part.segment)
-    let current = ''
-    for (const unit of units) {
-      if (font.widthOfTextAtSize(current+unit,size)>width && current) { line(current.trimEnd(),size,color); current='' }
-      current+=unit
-    }
-    if (current) line(current.trimEnd(),size,color)
-  }
-  const heading = text => { y-=14; line(text,12,accent); y-=3 }
-  line(data.name[language],27)
-  line(data.role[language],11,muted)
-  y-=5; page.drawLine({start:{x:51,y},end:{x:544,y},thickness:1.6,color:accent}); y-=21
-  if (data.isDemo) { wrap(labels[language].sample,8,accent); y-=5 }
-  heading(labels[language].about); wrap(data.bio[language])
-  heading(labels[language].education)
-  line(data.education.university[language],11)
-  wrap(`${data.education.degree[language]} · ${data.education.period[language]}`)
-  if (data.education.gpa) line(`GPA: ${data.education.gpa}`,10,muted)
-  heading(labels[language].skills)
-  for (const group of data.skills) wrap(`${group.label[language]}: ${group.items.join(' · ')}`,9)
-  heading(labels[language].projects)
-  for (const project of data.projects) {
-    line(project.title[language],11)
-    wrap(project.summary[language],9)
-    wrap(`${labels[language].role}: ${project.role[language]}`,9)
-    wrap(project.tech.join(' · '),8)
-    y-=7
-  }
-  heading(labels[language].contact)
-  wrap([data.email,data.github,data.linkedin].filter(Boolean).join(' · ') || labels[language].pending,9)
-  const pages = doc.getPages()
-  pages.forEach((current,index)=>current.drawText(`${index+1} / ${pages.length}`,{x:515,y:28,size:8,font,color:muted}))
-  const bytes = await doc.save()
-  await writeFile(path.join(output,`resume-${language}.pdf`),bytes)
-  console.log(`Created resume-${language}.pdf (${pages.length} page${pages.length===1?'':'s'}, ${bytes.length} bytes)`)
+} finally {
+  await browser.close()
 }

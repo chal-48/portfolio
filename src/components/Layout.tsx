@@ -1,83 +1,91 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
+import { AnimatePresence } from 'framer-motion'
+import { useLenis } from 'lenis/react'
 import { Link, NavLink, useLocation, useNavigationType } from 'react-router-dom'
-import { ArrowUp, ArrowUpRight, Menu, X } from 'lucide-react'
-import { AnimatePresence, motion, useScroll, useSpring } from 'framer-motion'
+import { ArrowUp, Moon, Sun, Search } from 'lucide-react'
+import { useTheme } from '@/lib/theme'
 import { useLanguage } from '@/lib/i18n'
 import { chapters } from '@/lib/navigation'
 import { portfolio } from '@/content'
-import { Logo } from './visuals'
+import SiteSearch from './SiteSearch'
 
 export function Header() {
-  const { t, language, setLanguage } = useLanguage()
+  const lenis = useLenis()
+  const { theme, toggleTheme } = useTheme()
   const [open, setOpen] = useState(false)
-  const location = useLocation()
+  const [searchOpen, setSearchOpen] = useState(false)
+  const { pathname } = useLocation()
   const trigger = useRef<HTMLButtonElement>(null)
-  const container = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll()
-  const progress = useSpring(scrollYProgress, { stiffness: 170, damping: 28, mass: .45 })
-  useEffect(() => { setOpen(false) }, [location.pathname])
+  const searchTrigger = useRef<HTMLButtonElement>(null)
+  const overlay = useRef<HTMLDivElement>(null)
+  const closeSearch = useCallback(() => { setSearchOpen(false); searchTrigger.current?.focus() }, [])
+  useEffect(() => { setOpen(false); setSearchOpen(false) }, [pathname])
+  useEffect(() => {
+    if (!open && !searchOpen) return
+    const previous = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    lenis?.stop()
+    return () => { document.body.style.overflow = previous; lenis?.start() }
+  }, [open, searchOpen, lenis])
+  useEffect(() => {
+    const shortcut = (event: KeyboardEvent) => { if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') { event.preventDefault(); setOpen(false); setSearchOpen(value => !value) } }
+    document.addEventListener('keydown', shortcut)
+    return () => document.removeEventListener('keydown', shortcut)
+  }, [])
   useEffect(() => {
     if (!open) return
-    const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') { setOpen(false); trigger.current?.focus() } }
-    const onPointer = (event: PointerEvent) => { if (!container.current?.contains(event.target as Node)) setOpen(false) }
-    document.addEventListener('keydown', onKey)
-    document.addEventListener('pointerdown', onPointer)
-    return () => { document.removeEventListener('keydown', onKey); document.removeEventListener('pointerdown', onPointer) }
+    const key = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') { setOpen(false); trigger.current?.focus() }
+      if (event.key === 'Tab') {
+        const targets = [trigger.current!, ...overlay.current!.querySelectorAll<HTMLAnchorElement>('a')]
+        if (event.shiftKey && document.activeElement === targets[0]) { event.preventDefault(); targets[targets.length-1].focus() }
+        if (!event.shiftKey && document.activeElement === targets[targets.length-1]) { event.preventDefault(); targets[0].focus() }
+      }
+    }
+    document.addEventListener('keydown', key)
+    return () => document.removeEventListener('keydown', key)
   }, [open])
-  return <header className="site-header"><motion.div className="scroll-progress" style={{ scaleX: progress }}/><div className="header-inner">
-    <Link to="/" className="brand" aria-label={t('home')}><Logo /><span>PORTFOLIO <span className="brand-divider">/</span> 2026</span></Link>
-    <div className="header-right"><div className="language-toggle" role="group" aria-label={t('language')}>
-      {(['th', 'en'] as const).map(value => <button key={value} type="button" aria-pressed={language === value} onClick={() => setLanguage(value)} lang={value}>{value.toUpperCase()}</button>)}
-    </div><div className="menu-container" ref={container}><button className="icon-button menu-toggle" ref={trigger} type="button" aria-label={open ? t('closeMenu') : t('menu')} aria-expanded={open} aria-controls="site-menu" onClick={() => setOpen(!open)}>{open ? <X size={20} /> : <Menu size={20} />}</button>
-      <AnimatePresence>{open && <motion.nav id="site-menu" className="site-menu" aria-label={t('menu')} initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: .16 }}><NavLink to="/" end><span>{t('home')}</span><ArrowUpRight size={15}/></NavLink>{chapters.map(chapter => <NavLink to={chapter.path} key={chapter.id}><span><chapter.icon size={15}/>{t(chapter.label)}</span><ArrowUpRight size={15}/></NavLink>)}</motion.nav>}</AnimatePresence>
-    </div></div>
-  </div></header>
-}
-
-export function SectionTabs() {
-  const { t } = useLanguage()
-  return <nav className="section-tabs" aria-label={t('allSections')}>{chapters.map(chapter => <NavLink to={chapter.path} key={chapter.id} className={({ isActive }) => isActive ? 'section-tab active' : 'section-tab'}>{({ isActive }) => <><small>{chapter.number}</small><span>{t(chapter.label)}</span>{isActive && <motion.i className="section-tab-indicator" layoutId="section-tab-indicator" transition={{ type: 'spring', stiffness: 420, damping: 34 }}/>}</>}</NavLink>)}</nav>
+  const label = (id: string) => id === 'skills' ? 'Skills' : id === 'about' ? 'About' : id === 'contact' ? 'Contact' : id === 'resume' ? 'Resume' : 'Projects'
+  return <><header className="site-header header"><div className="header-inner">
+    <Link to="/" className="logo" aria-label="Chalisa — Home">Chalisa</Link>
+    <div className="header-right"><nav className="site-nav nav" aria-label="Main navigation">
+      {chapters.map(chapter => <NavLink className="nav-link" key={chapter.id} to={chapter.path}>{label(chapter.id)}</NavLink>)}
+    </nav><button className="theme-btn search-toggle" ref={searchTrigger} type="button" onClick={() => { setOpen(false); setSearchOpen(true) }} aria-label="Search (Ctrl+K)"><Search size={18}/></button><button className="theme-btn theme-toggle" type="button" onClick={toggleTheme} aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}>{theme === 'dark' ? <Sun size={20}/> : <Moon size={20}/>}</button>
+    <button className={`nav-toggle menu-toggle ${open ? 'is-open' : ''}`} ref={trigger} type="button" aria-label={open ? 'Close menu' : 'Open menu'} aria-expanded={open} aria-controls="site-menu" onClick={() => setOpen(value => !value)}><span className="nav-toggle-bar"/><span className="nav-toggle-bar"/></button></div>
+  </div></header><div id="site-menu" className={`nav-overlay ${open ? 'is-open' : ''}`} ref={overlay} aria-hidden={!open} inert={!open} role="dialog" aria-modal="true" aria-label="Main menu" onClick={event => { if (event.target === event.currentTarget) setOpen(false) }}><span className="nav-overlay-decoration" aria-hidden="true">= ᗜ ω ᗜ.=</span><nav className="nav-overlay-links" aria-label="Mobile navigation">{chapters.map((chapter,index) => <NavLink to={chapter.path} className="nav-overlay-link" key={chapter.id} style={{ '--i':index } as CSSProperties}><span className="nav-overlay-index" aria-hidden="true">0{index+1}</span>{label(chapter.id)}</NavLink>)}</nav></div><AnimatePresence>{searchOpen && <SiteSearch key="site-search" close={closeSearch}/>}</AnimatePresence><div className="noise-overlay" aria-hidden="true"/></>
 }
 
 export function Footer() {
-  const { t } = useLanguage()
-  const [showTop, setShowTop] = useState(false)
+  const lenis = useLenis()
+  const [visible, setVisible] = useState(false)
   useEffect(() => {
-    const update = () => setShowTop(window.scrollY > 400)
+    const update = () => setVisible(window.scrollY > 500)
     update(); window.addEventListener('scroll', update, { passive: true })
     return () => window.removeEventListener('scroll', update)
   }, [])
-  return <><footer className="site-footer"><div><Logo /><span>PORTFOLIO INDEX</span></div><small>© {new Date().getFullYear()} · {t('footerNote')}</small></footer>{showTop && <button className="scroll-top icon-button" aria-label={t('scrollTop')} onClick={() => window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })}><ArrowUp size={18}/></button>}</>
+  return <><footer className="site-credits">Based on <a href="https://github.com/itousouta15/itouSouta.me" target="_blank" rel="noopener noreferrer">itouSouta.me</a> by <a href="https://github.com/itousouta15" target="_blank" rel="noopener noreferrer">itousouta15</a><span aria-hidden="true"> · </span><Link to="/credits">Credits</Link></footer>{visible && <button className="icon-button scroll-top" aria-label="Back to top" onClick={() => lenis ? lenis.scrollTo(0,{ lock:true }) : window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })}><ArrowUp size={20}/></button>}</>
 }
 
 const positions = new Map<string, number>()
-
-export function PageEffects() {
+export function PageEffects({ pathname }: { pathname: string }) {
+  const lenis = useLenis()
   const location = useLocation()
   const type = useNavigationType()
-  const { language, localize, t } = useLanguage()
-  useEffect(() => {
-    const page = chapters.find(chapter => location.pathname === chapter.path || location.pathname.startsWith(chapter.path + '/'))
-    document.title = `${page ? t(page.label) : t('home')} · ${localize(portfolio.name)} — Portfolio`
-    document.querySelector('meta[name="description"]')?.setAttribute('content', localize(portfolio.tagline))
-  }, [location.pathname, language, localize, t])
-  useEffect(() => {
-    const key = location.pathname
-    let saved = positions.get(key) ?? 0
-    try { saved = Number(sessionStorage.getItem(`portfolio-scroll:${key}`)) || saved } catch { /* Optional storage. */ }
-    const shouldRestore = type === 'POP' || location.state?.restoreHome
-    window.scrollTo({ top: shouldRestore ? saved : 0, behavior: 'instant' })
-    const frame = requestAnimationFrame(() => {
-      document.getElementById('page-title')?.focus({ preventScroll: true })
-      if (location.hash) document.getElementById(location.hash.slice(1))?.scrollIntoView({ behavior: 'instant' })
-    })
-    const remember = () => {
-      positions.set(key, window.scrollY)
-      try { sessionStorage.setItem(`portfolio-scroll:${key}`, String(window.scrollY)) } catch { /* Optional storage. */ }
-    }
+  const { t } = useLanguage()
+  useLayoutEffect(() => {
+    if (pathname !== location.pathname) return
+    const chapter = chapters.find(item => location.pathname === item.path || location.pathname.startsWith(item.path + '/'))
+    document.title = `${pathname === '/credits' ? 'Credits · ' : chapter ? t(chapter.label) + ' · ' : ''}${portfolio.name.en}`
+    document.documentElement.lang = 'en'
+    document.querySelector('meta[name="description"]')?.setAttribute('content', portfolio.bio.en.split('\n')[0])
+    const saved = positions.get(location.pathname) ?? 0
+    const top = type === 'POP' || location.state?.restoreHome ? saved : 0
+    if (lenis) { lenis.resize(); lenis.scrollTo(top,{ immediate:true,force:true }) }
+    else window.scrollTo({ top, behavior:'instant' })
+    const frame = requestAnimationFrame(() => document.getElementById('page-title')?.focus({ preventScroll: true }))
+    const remember = () => positions.set(location.pathname, window.scrollY)
     window.addEventListener('scroll', remember, { passive: true })
-    window.addEventListener('pagehide', remember)
-    return () => { cancelAnimationFrame(frame); window.removeEventListener('scroll', remember); window.removeEventListener('pagehide', remember) }
-  }, [location.pathname, location.hash])
+    return () => { cancelAnimationFrame(frame); window.removeEventListener('scroll', remember) }
+  }, [pathname, location.pathname, location.state, type, t, lenis])
   return null
 }

@@ -1,200 +1,82 @@
-import { useRef, useState, type KeyboardEvent, type PointerEvent } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react'
 import { Link } from 'react-router-dom'
-import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowDownRight, ArrowUpRight, Download, Mail } from 'lucide-react'
+import { useReducedMotion } from 'framer-motion'
+import { ArrowRight } from 'lucide-react'
 import { portfolio } from '@/content'
-import { useLanguage } from '@/lib/i18n'
-import { chapters } from '@/lib/navigation'
+import GithubActivity from '@/components/GithubActivity'
 
-type ChapterId = (typeof chapters)[number]['id']
-
-const copy = {
-  th: {
-    edition: 'PORTFOLIO / 2026',
-    discipline: 'นักศึกษาวิศวกรรมคอมพิวเตอร์',
-    role: 'FULL STACK DEVELOPER',
-    index: 'สารบัญ',
-    instruction: 'วางเมาส์หรือใช้แป้นพิมพ์เพื่อดูตัวอย่าง',
-    open: 'เปิดหัวข้อ',
-    photo: 'พื้นที่สำหรับรูปถ่าย',
-    replace: 'เพิ่มรูปของคุณภายหลัง',
-    scroll: 'สำรวจหัวข้อ',
-    previews: {
-      about: 'ประวัติ การศึกษา และทิศทางที่ต้องการพัฒนาต่อ',
-      skills: 'ภาษา Framework ฐานข้อมูล และเครื่องมือที่ใช้งาน',
-      projects: 'ผลงานที่คัดเลือก บทบาท เทคโนโลยี และผลลัพธ์',
-      resume: 'ข้อมูลโดยสรุปในรูปแบบ PDF พร้อมดาวน์โหลด',
-      contact: 'Email, GitHub, LinkedIn และช่องทางพูดคุย',
-    },
-  },
-  en: {
-    edition: 'PORTFOLIO / 2026',
-    discipline: 'Computer Engineering Student',
-    role: 'FULL STACK DEVELOPER',
-    index: 'Index',
-    instruction: 'Hover or use the keyboard to preview each chapter.',
-    open: 'Open chapter',
-    photo: 'Portrait placeholder',
-    replace: 'Add your photo later',
-    scroll: 'Explore the index',
-    previews: {
-      about: 'Background, education, and the direction I want to grow in.',
-      skills: 'Languages, frameworks, databases, and tools I work with.',
-      projects: 'Selected work, responsibilities, technology, and outcomes.',
-      resume: 'A concise PDF version of my background, ready to download.',
-      contact: 'Email, GitHub, LinkedIn, and a direct way to reach me.',
-    },
-  },
-} as const
-
-const projectCovers = [
-  '/project-placeholders/project-01.svg',
-  '/project-placeholders/project-02.svg',
-  '/project-placeholders/project-03.svg',
+const technologies = [
+  ['C', 'c-original.svg', '#172437', '#ddeaf8'],
+  ['C++', 'cplusplus-plain.svg', '#172943', '#dce8f8'],
+  ['Python', 'python-original.svg', '#1a2632', '#e0ecf5'],
+  ['HTML', 'html5-original.svg', '#2d1d19', '#fbe8dc'],
+  ['CSS', 'css3-original.svg', '#17273f', '#dce8f8'],
+  ['JavaScript', 'javascript-original.svg', '#2d2a18', '#faf8dc'],
+  ['TypeScript', 'typescript-original.svg', '#17283f', '#dce8f8'],
+  ['Git', 'git-original.svg', '#2d211c', '#fbe8dc'],
+  ['GitHub', 'github-original.svg', '#20232c', '#e8e8ec'],
+  ['VS Code', 'vscode-original.svg', '#172635', '#dce8f5'],
+  ['Docker', 'docker-original.svg', '#14293c', '#d8e8f8'],
+  ['Dart', 'dart-original.svg', '#172b35', '#dce8f5'],
+  ['Flutter', 'flutter-original.svg', '#172b3e', '#dce8f8'],
 ]
 
-function ChapterPreview({ id, photoLabel, replaceLabel }: { id: ChapterId; photoLabel: string; replaceLabel: string }) {
-  if (id === 'about') return <div className="index-portrait-preview">
-    <div className="portrait-placeholder" aria-label={photoLabel}>
-      <span className="portrait-index">01</span>
-      <span className="portrait-initials">{portfolio.initials}</span>
-      <span className="portrait-label">{replaceLabel}</span>
+function TechnologyIcon({ technology, small = false }: { technology: string[]; small?: boolean }) {
+  return <span className={`technology-icon ${technology[0] === 'GitHub' ? 'technology-github' : ''}`} style={{ '--tile-dark':technology[2], '--tile-light':technology[3] } as CSSProperties}><img src={`/assets/icons/${technology[1]}`} alt="" width={small ? 18 : 52} height={small ? 18 : 52}/></span>
+}
+
+function ShapeBadge({ shape, color }: { shape: string; color: string }) {
+  const [active, setActive] = useState(false)
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
+  useEffect(() => () => clearTimeout(timer.current), [])
+  return <button type="button" className={`badge-shape badge-shape--${shape} ${active ? 'shape-morph' : ''}`} aria-label={`Animate ${shape} decoration`} style={{ background:color }} onClick={() => { clearTimeout(timer.current); setActive(true); timer.current = setTimeout(() => setActive(false), 620) }}/>
+}
+
+function HeroFace() {
+  const reduced = useReducedMotion()
+  const track = useRef<HTMLButtonElement>(null)
+  const [wink, setWink] = useState(false)
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined)
+  useEffect(() => () => clearTimeout(timer.current), [])
+  const follow = (event: PointerEvent<HTMLElement>) => {
+    if (reduced || event.pointerType === 'touch' || !track.current) return
+    const bounds = event.currentTarget.getBoundingClientRect()
+    track.current.style.transform = `translate(${Math.max(-6, Math.min(6, (event.clientX - bounds.left - bounds.width / 2) * .04))}px, ${Math.max(-6, Math.min(6, (event.clientY - bounds.top - bounds.height / 2) * .04))}px)`
+  }
+  return <div className="hero-side" onPointerMove={follow} onPointerLeave={() => { if (track.current) track.current.style.transform = '' }}><button type="button" ref={track} className="hero-face-mouse face-button" aria-label="Animate decorative face" onClick={() => { clearTimeout(timer.current); setWink(true); timer.current = setTimeout(() => setWink(false), 300) }}><span className="hero-face-track"><span className="hero-face" aria-hidden="true" data-face={wink ? '= > ω ᗜ.=' : '= ᗜ ω ᗜ.='}/></span></button></div>
+}
+
+function ProfileCard() {
+  return <aside className="profile"><div className="profile-card">
+<div className="profile-banner image-slot" data-image-slot="profile-banner" aria-label="Profile banner image space">
+  <img src="/project-placeholders/bg-home.jpg" alt="" />
+</div>    <div className="profile-body"><div className="avatar-row"><div className="avatar-wrap"><div className="avatar image-slot" data-image-slot="profile-avatar" aria-label="Profile photo space">{portfolio.portrait && <img className="avatar-image" src={portfolio.portrait} alt={portfolio.name.en}/>}</div></div><div className="badges"><ShapeBadge shape="circle" color="var(--blue)"/><ShapeBadge shape="triangle" color="var(--purple)"/><ShapeBadge shape="square" color="var(--dim)"/><ShapeBadge shape="diamond" color="var(--blue)"/></div></div>
+      <div className="name-row"><h2 className="name">{portfolio.name.en}</h2></div><p className="handle">chal-48</p>
+      <div className="divider"/>
+      <div className="label">Studying</div><div className="field">{portfolio.education.degree.en}</div>
+      <div className="label mt16">Focus</div><div className="roles"><div className="role-row"><span className="role-chip"><span className="role-dot blue"/>Student</span><span className="role-chip"><span className="role-dot blue"/>Full Stack</span></div><div className="role-row"><span className="role-chip"><span className="role-dot purple"/>Backend</span><span className="role-chip"><span className="role-dot purple"/>Embedded</span></div></div>
+      <div className="label mt16">Education</div><div className="field profile-facts"><span>{portfolio.education.university.en}</span><span>Year {portfolio.education.year} · GPA {portfolio.education.gpa} / 4.00</span><span>{portfolio.education.period.en}</span></div>
     </div>
-    <div className="portrait-rule"><span />{photoLabel}</div>
-  </div>
+  </div></aside>
+}
 
-  if (id === 'skills') return <div className="index-skills-preview">
-    {portfolio.skills.map((group, index) => <div className="skill-preview-row" key={group.id}>
-      <span>0{index + 1}</span>
-      <strong>{group.items.slice(0, 3).join(' / ')}</strong>
-      <i>{String(group.items.length).padStart(2, '0')}</i>
-    </div>)}
-    <div className="skill-preview-orbit" aria-hidden="true"><span /><span /><span /></div>
-  </div>
-
-  if (id === 'projects') return <div className="index-project-preview">
-    {projectCovers.map((src, index) => <div className={`project-sheet sheet-${index + 1}`} key={src}>
-      <img src={src} alt="" />
-      <span>0{index + 1}</span>
-    </div>)}
-  </div>
-
-  if (id === 'resume') return <div className="index-resume-preview">
-    <div className="resume-sheet">
-      <div className="resume-sheet-top"><span>CURRICULUM VITAE</span><Download size={18} /></div>
-      <strong>{portfolio.initials}</strong>
-      <div className="resume-lines"><span /><span /><span /><span /></div>
-      <small>PDF · A4 · 01 PAGE</small>
-    </div>
-  </div>
-
-  return <div className="index-contact-preview">
-    <span className="contact-pulse" />
-    <Mail size={42} strokeWidth={1.25} />
-    <p>EMAIL<br />GITHUB<br />LINKEDIN</p>
-    <ArrowDownRight size={54} strokeWidth={1.1} />
-  </div>
+function RotatingName() {
+  return <span className="name-rotator hero-name-rotator" aria-hidden="true"><span className="hero-name-track"><b className="hero-name hero-name-primary">Chalisa</b><b className="hero-name hero-name-alternate">Aom</b><b className="hero-name hero-name-clone">Chalisa</b></span></span>
 }
 
 export default function Home() {
-  const { t, localize, language } = useLanguage()
-  const content = copy[language]
-  const [active, setActive] = useState<ChapterId>('projects')
-  const rowRefs = useRef<(HTMLAnchorElement | null)[]>([])
-  const activeChapter = chapters.find(chapter => chapter.id === active) ?? chapters[2]
-
-  const movePreview = (event: PointerEvent<HTMLElement>) => {
-    const bounds = event.currentTarget.getBoundingClientRect()
-    const x = (event.clientX - bounds.left) / bounds.width - 0.5
-    const y = (event.clientY - bounds.top) / bounds.height - 0.5
-    event.currentTarget.style.setProperty('--pointer-x', x.toFixed(3))
-    event.currentTarget.style.setProperty('--pointer-y', y.toFixed(3))
-  }
-
-  const resetPreview = (event: PointerEvent<HTMLElement>) => {
-    event.currentTarget.style.setProperty('--pointer-x', '0')
-    event.currentTarget.style.setProperty('--pointer-y', '0')
-  }
-
-  const moveIndexRow = (event: PointerEvent<HTMLAnchorElement>) => {
-    const bounds = event.currentTarget.getBoundingClientRect()
-    event.currentTarget.style.setProperty('--spot-x', `${event.clientX - bounds.left}px`)
-    event.currentTarget.style.setProperty('--spot-y', `${event.clientY - bounds.top}px`)
-    event.currentTarget.style.setProperty('--row-x', ((event.clientX - bounds.left) / bounds.width - .5).toFixed(3))
-  }
-
-  const resetIndexRow = (event: PointerEvent<HTMLAnchorElement>) => {
-    event.currentTarget.style.setProperty('--spot-x', '50%')
-    event.currentTarget.style.setProperty('--spot-y', '50%')
-    event.currentTarget.style.setProperty('--row-x', '0')
-  }
-
-  const moveRowFocus = (event: KeyboardEvent<HTMLAnchorElement>, index: number) => {
-    let next = index
-    if (event.key === 'ArrowDown' || event.key === 'ArrowRight') next = (index + 1) % chapters.length
-    else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') next = (index + chapters.length - 1) % chapters.length
-    else if (event.key === 'Home') next = 0
-    else if (event.key === 'End') next = chapters.length - 1
-    else return
-    event.preventDefault()
-    setActive(chapters[next].id)
-    rowRefs.current[next]?.focus()
-  }
-
-  return <div className="editorial-home">
-    <section className="editorial-cover" aria-labelledby="page-title">
-      <motion.div className="cover-heading" initial="hidden" animate="visible" variants={{ hidden: {}, visible: { transition: { staggerChildren: .075 } } }}>
-        <motion.div className="cover-meta" variants={{ hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }}>
-          <span>{content.edition}</span>
-          <span className="cover-meta-line" />
-          <span>{content.discipline}</span>
-        </motion.div>
-        <motion.h1 id="page-title" tabIndex={-1} variants={{ hidden: { opacity: 0, y: 26 }, visible: { opacity: 1, y: 0 } }}>
-          <span>{localize(portfolio.name)}</span>
-          <strong>{content.role}</strong>
-        </motion.h1>
-      </motion.div>
-
-      <motion.div className="editorial-index-layout" initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .22, duration: .55 }}>
-        <nav className="editorial-index" aria-label={t('allSections')}>
-          <div className="index-intro"><span>{content.index}</span><small>{content.instruction}</small></div>
-          <div className="index-rows">
-            {chapters.map((chapter, index) => <Link
-              to={chapter.path}
-              key={chapter.id}
-              ref={element => { rowRefs.current[index] = element }}
-              className={`index-row ${active === chapter.id ? 'is-active' : ''}`}
-              data-testid={`index-${chapter.id}`}
-              onMouseEnter={() => setActive(chapter.id)}
-              onFocus={() => setActive(chapter.id)}
-              onTouchStart={() => setActive(chapter.id)}
-              onKeyDown={event => moveRowFocus(event, index)}
-              onPointerMove={moveIndexRow}
-              onPointerLeave={resetIndexRow}
-            >
-              <span className="index-number">{chapter.number}</span>
-              <span className="index-title">{t(chapter.label)}</span>
-              <span className="index-description">{content.previews[chapter.id]}</span>
-              <ArrowUpRight className="index-arrow" size={25} strokeWidth={1.35} />
-            </Link>)}
-          </div>
-        </nav>
-
-        <aside className="editorial-preview" onPointerMove={movePreview} onPointerLeave={resetPreview} aria-live="polite">
-          <div className="preview-topline"><span>{activeChapter.number} / 05</span><span>{content.open}</span></div>
-          <AnimatePresence mode="wait">
-            <motion.div className="preview-stage" key={active} initial={{ opacity: 0, y: 16, rotate: .4 }} animate={{ opacity: 1, y: 0, rotate: 0 }} exit={{ opacity: 0, y: -12 }} transition={{ duration: .26, ease: [0.22, 1, 0.36, 1] }}>
-              <ChapterPreview id={active} photoLabel={content.photo} replaceLabel={content.replace} />
-            </motion.div>
-          </AnimatePresence>
-          <div className="preview-caption"><strong>{t(activeChapter.label)}</strong><span>{content.previews[active]}</span></div>
-        </aside>
-      </motion.div>
-
-      <div className="cover-footer">
-        <span className="cover-meter"><b>01</b><i><em /></i><b>05</b></span>
-        <span>{content.scroll}<ArrowDownRight size={16} /></span>
-      </div>
-    </section>
-  </div>
+  const upper = technologies.filter((_, index) => index % 2 === 0)
+  const lower = technologies.filter((_, index) => index % 2 === 1)
+  return <section className="home-grid"><ProfileCard/><div className="right-col">
+    <section className="card hero"><div className="hero-main"><p className="hero-greet">Hello there.</p><h1 id="page-title" className="hero-title" tabIndex={-1} aria-label="I'm Chalisa, also known as Aom"><span className="hero-intro-prefix">I'm</span><RotatingName/></h1><p className="hero-sub">A student interested in full-stack development.</p><div className="hero-actions"><Link to="/about" className="btn-primary">About me<span className="btn-arrow dark"><ArrowRight size={17}/></span></Link><Link to="/projects" className="btn-ghost">Projects<span className="btn-arrow inset"><ArrowRight size={17}/></span></Link></div></div><HeroFace/></section>
+    <Link to="/skills" className="card quote-card" data-testid="index-skills" aria-label="Technical skills"><div className="quote-main"><p className="quote-text">Web, mobile<br/>&amp; embedded.</p></div><div className="tiles-strip" aria-hidden="true">{[upper,lower].map((row,index) => <div className={`tiles-row ${index ? 'tiles-row-lower' : ''}`} key={index}>{[0,1].map(group => <div className="tiles-row-group" key={group}>{row.map(technology => <div className="tile" key={technology[0]}><TechnologyIcon technology={technology}/></div>)}</div>)}</div>)}</div><div className="quote-tech-panel">{technologies.map(technology => <div className="quote-tech-item" key={technology[0]}><span className="quote-tech-icon"><TechnologyIcon technology={technology} small/></span><span className="quote-tech-name">{technology[0]}</span></div>)}</div></Link>
+    <div className="bento home-bento">
+      <Link to="/skills" className="bento-thoughts nav-card"><div><div className="card-kicker">TECHNICAL</div><h2 className="nav-card-title">Skills</h2></div><span className="nav-card-ghost" aria-hidden="true">S</span><span className="nav-card-arrow" aria-hidden="true">↗</span></Link>
+      <Link to="/about" className="bento-likes card-likes" data-testid="index-about"><div className="card-likes-img image-slot" data-image-slot="home-about" aria-label="About card image space"/><div className="card-body"><div className="card-kicker">ABOUT</div><h2 className="card-title-lg">About<br/>me</h2></div><span className="card-arrow-lg" aria-hidden="true">↗</span></Link>
+      <Link to="/contact" className="bento-friends nav-card" data-testid="index-contact"><div><div className="card-kicker">CONTACT</div><h2 className="nav-card-title">Contact</h2></div><span className="nav-card-ghost" aria-hidden="true">@</span><span className="nav-card-arrow" aria-hidden="true">↗</span></Link>
+      <Link to="/resume" className="bento-experience nav-card" data-testid="index-resume"><div><div className="card-kicker">RESUME</div><h2 className="nav-card-title">Resume</h2></div><span className="nav-card-ghost" aria-hidden="true">R</span><span className="nav-card-arrow" aria-hidden="true">↗</span></Link>
+      <Link to="/projects" className="bento-projects card-projects" data-testid="index-projects"><img className="card-projects-glyph git-projects-glyph" src="/assets/icons/git-original.svg" alt="" aria-hidden="true"/><div className="card-body-sm"><div className="card-kicker">PROJECTS</div><h2 className="card-title-md">My projects</h2></div><span className="card-arrow-sm" aria-hidden="true">↗</span></Link>
+    </div>
+    <GithubActivity/>
+  </div></section>
 }

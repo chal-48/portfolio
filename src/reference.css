@@ -1,0 +1,1806 @@
+/* Adapted from itouSouta.me (Apache-2.0).
+ * Layout, decoration, colors and dimensions retain the original source values.
+ * Modified for Chalisa's content, empty image slots and React Router.
+ * License: public/licenses/itouSouta-Apache-2.0.txt
+ */
+
+:root {
+  --bg: #18191c;
+  --panel: #232426;
+  --panel2: #232426;
+  --panel2-a: rgba(36, 37, 41, 0.82);
+  --frost: #23242b73;
+  --inset: #1b1d20;
+  --bd: rgba(255, 255, 255, 0.07);
+  --bd2: rgba(255, 255, 255, 0.14);
+  --dc-act-back: #131618;
+  --tx: #e8ebf2;
+  --dim: #9aa1ad;
+  --mute: #6a7280;
+  --blue: #b8c4f8;
+  --purple: #a1ade0;
+  --btn: #94a6cc;
+  --btntx: #24272c;
+  --shadow: rgba(0, 0, 0, 0.45);
+
+  background: var(--bg);
+}
+
+.root {
+  min-height: 100vh;
+  color: var(--tx);
+  font-family: "Noto Sans TC", system-ui, sans-serif;
+  background:
+    radial-gradient(
+      1100px 560px at 72% -12%,
+      rgba(141, 181, 200, 0.11),
+      transparent 60%
+    ),
+    var(--bg);
+  transition:
+    background 0.35s ease,
+    color 0.35s ease;
+}
+
+:root[data-theme="light"] {
+  --bg: #dadadd;
+  --panel: #f0f0f5;
+  --panel2: #f0f0f5;
+  --panel2-a: rgba(227, 228, 233, 0.82);
+  --frost: rgba(224, 225, 235, 0.45);
+  --inset: #e1e3ec;
+  --bd: rgba(6, 6, 7, 0.08);
+  --bd2: rgba(20, 24, 40, 0.16);
+  --dc-act-back: rgba(13, 13, 15, 0.14);
+  --tx: #22262d;
+  --dim: #494f59; /* was #5b626d — darkened for WCAG AA contrast on panel bg */
+  --mute: #6b7280; /* was #8a909b — darkened to improve readability */
+  --blue: #364a7c;
+  --purple: #5c7cbf;
+  --btn: #2b2f36;
+  --btntx: #f2f4f9;
+  --shadow: rgba(60, 70, 90, 0.16);
+}
+
+
+/* ---- Keyframes ---- */
+@keyframes itMarquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes itWiggle {
+  0%,
+  100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  25% {
+    transform: translateX(-1px) rotate(-2deg);
+  }
+  50% {
+    transform: translateX(1px) rotate(2deg);
+  }
+  75% {
+    transform: translateX(-1px) rotate(-1.5deg);
+  }
+  90% {
+    transform: translateX(1px) rotate(1.5deg);
+  }
+}
+
+.noise-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  background-image: url("/assets/brand/noise-dark.svg");
+  background-size: 240px 240px;
+}
+/* 手機維持省略噪點層，減少全螢幕透明合成。 */
+@media (max-width: 760px) {
+  .noise-overlay {
+    display: none;
+  }
+}
+/* 相同的紋理，淺色主題降低黑色顆粒、提高白色顆粒的 alpha。 */
+:root[data-theme="light"] .noise-overlay {
+  background-image: url("/assets/brand/noise-light.svg");
+}
+
+@keyframes itHeaderDrop {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  background: var(--panel2-a);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  /* Held at the itHeaderDrop 0% frame (via "both") until the loader clears
+     the screen, then slides down into place — see body.site-revealed below. */
+  animation: itHeaderDrop 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-play-state: paused;
+}
+@media (max-width: 760px) {
+  .header {
+    background: var(--panel2);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+.header-inner {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 13px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+.logo {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: "ChenYuLuoYan", "Dancing Script", cursive;
+  font-size: 40px;
+  font-weight: 700;
+  padding: 0;
+  line-height: 1;
+  transform: translate(0px, 2px);
+  /* ChenYuLuoYan 字面特別小，載入前用 fallback 會先放大再縮小（FOUT）。
+     字體就緒前先隱藏，避免出現「先變大再縮小」的跳動。 */
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.nav-link {
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--dim);
+  font-family: "Noto Sans TC", sans-serif;
+  font-size: 15.5px;
+  font-weight: 500;
+  padding: 11px 18px;
+  border-radius: 10px;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 7px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--blue);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s ease;
+}
+.nav-link:focus {
+  outline: none;
+}
+.nav-link:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+.nav-link:hover {
+  color: var(--tx);
+}
+.nav-link:hover::after {
+  transform: scaleX(1);
+}
+.nav-link.active {
+  color: var(--tx);
+  font-weight: 700;
+}
+.nav-link.active::after {
+  background: var(--purple);
+  transform: scaleX(1);
+}
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
+  background: var(--inset);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+.nav-toggle:active {
+  transform: scale(0.88);
+}
+.nav-toggle-bar {
+  display: block;
+  width: 18px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--tx);
+  transition: transform 0.25s ease;
+}
+.nav-toggle.is-open .nav-toggle-bar:first-child {
+  transform: translateY(3.5px) rotate(45deg);
+}
+.nav-toggle.is-open .nav-toggle-bar:last-child {
+  transform: translateY(-3.5px) rotate(-45deg);
+}
+.nav-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 96px 24px 40px;
+  background:
+    radial-gradient(
+      1100px 560px at 72% -12%,
+      rgba(141, 181, 200, 0.11),
+      transparent 60%
+    ),
+    var(--bg);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.3s ease,
+    visibility 0s linear 0.3s;
+}
+.nav-overlay.is-open {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 0.3s ease,
+    visibility 0s linear 0s;
+}
+/* Each face wanders off-screen, pauses invisible, then re-enters from a different side.
+   opacity steps create the "one at a time" feel without JS. */ /* individual keyframes control visible opacity */
+
+.nav-overlay-links {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(14px, 4vh, 28px);
+}
+.nav-overlay-link {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 14px;
+  font-family: "Shippori Mincho", "Noto Serif TC", serif;
+  font-size: clamp(28px, 9vw, 44px);
+  color: var(--tx);
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.35s ease,
+    transform 0.35s ease,
+    color 0.2s ease;
+}
+.nav-overlay.is-open .nav-overlay-link {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: calc(0.12s + var(--i) * 0.06s);
+}
+.nav-overlay-index {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 14px;
+  letter-spacing: 0.1em;
+  color: var(--purple);
+}
+.nav-overlay-link:hover,
+.nav-overlay-link.active {
+  color: var(--purple);
+}
+.nav-overlay-link:focus {
+  outline: none;
+}
+.nav-overlay-link:focus-visible {
+  outline: 2px solid var(--purple);
+  outline-offset: 4px;
+}
+@media (min-width: 961px) {
+  .nav-overlay {
+    display: none;
+  }
+}
+.theme-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
+  background: var(--inset);
+  color: var(--tx);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.theme-btn:hover {
+  transform: rotate(35deg);
+}
+.theme-btn:active {
+  transform: rotate(35deg) scale(0.85);
+}
+/* 這顆按鈕會因為 React 條件渲染整個掛載/卸載，純 CSS transition 在剛掛載的
+   那一刻沒有「之前的狀態」可以補間，所以改用進場 keyframe——掛載當下直接從
+   itPopIn 的 0% 開始播放。
+   刻意不加 both/forwards：這顆鈕的 :hover/:active 也會動 transform，如果讓
+   進場動畫用 fill-mode 停在最後一幀，會一直蓋掉 :hover/:active 的 transform，
+   讓這顆鈕動畫播完之後 hover 就再也轉不動了。播完直接交還正常的 cascade。 */
+
+
+.main {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 26px 20px 0;
+}
+.home-grid {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 20px;
+  align-items: start;
+}
+.card {
+  background: var(--panel);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* ===========================================================================
+   Profile card (Discord-style)
+   =========================================================================== */
+.profile {
+  flex: 1 1 330px;
+  min-width: 340px;
+  max-width: 400px;
+  position: sticky;
+  top: 84px;
+}
+.profile-card {
+  background: var(--panel2);
+  border-radius: 0;
+  overflow: hidden;
+  box-shadow: none;
+}
+.profile-banner {
+  height: clamp(80px, 14vw, 136px);
+  background: linear-gradient(
+    135deg,
+    rgba(141, 181, 200, 0.18) 0%,
+    #20232a 100%
+  );
+}
+.profile-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 33%;
+  display: block;
+}
+.profile-body {
+  padding: 0 22px 24px;
+}
+.avatar-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: -48px;
+}
+.avatar-wrap {
+  position: relative;
+}
+.avatar {
+  width: 98px;
+  height: 98px;
+  border-radius: 50%;
+  border: 7px solid var(--panel2);
+  background: var(--panel2);
+  display: block;
+  padding: 0;
+  overflow: hidden;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.avatar-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+/* 彩蛋：頭像連點 5 下才觸發，轉一圈再跳轉 */
+/* 點狀態圓點展開一個小註解泡泡——用 clip-path 從下往上「掀開」，不是
+   淡入或放大，比較像布幕被掀起來的手感 */
+.badges {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  background: var(--inset);
+  border-radius: 10px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+}
+.badge-shape {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  cursor: pointer;
+  transition: filter 0.2s ease;
+}
+.badge-shape:hover {
+  filter: brightness(1.35);
+}
+/* 四種形狀都是 8 個點的 polygon，點數對齊才能讓瀏覽器在兩個形狀之間逐點
+   內插出平滑的變形動畫（見 BadgeShape.tsx 的說明）。 */
+.badge-shape--circle {
+  clip-path: polygon(
+    29.3% 0%,
+    70.7% 0%,
+    100% 29.3%,
+    100% 70.7%,
+    70.7% 100%,
+    29.3% 100%,
+    0% 70.7%,
+    0% 29.3%
+  );
+}
+.badge-shape--triangle {
+  clip-path: polygon(
+    50% 0%,
+    66.67% 33.33%,
+    83.33% 66.67%,
+    100% 100%,
+    66.67% 100%,
+    33.33% 100%,
+    0% 100%,
+    25% 50%
+  );
+}
+.badge-shape--square {
+  clip-path: polygon(
+    0% 0%,
+    50% 0%,
+    100% 0%,
+    100% 50%,
+    100% 100%,
+    50% 100%,
+    0% 100%,
+    0% 50%
+  );
+}
+.badge-shape--diamond {
+  clip-path: polygon(
+    50% 0%,
+    75% 25%,
+    100% 50%,
+    75% 75%,
+    50% 100%,
+    25% 75%,
+    0% 50%,
+    25% 25%
+  );
+}
+.badge-shape--morph-to-triangle {
+  animation: badge-morph-circle-triangle var(--badge-morph-ms) ease;
+}
+.badge-shape--morph-to-square {
+  animation: badge-morph-triangle-square var(--badge-morph-ms) ease;
+}
+.badge-shape--morph-to-diamond {
+  animation: badge-morph-square-diamond var(--badge-morph-ms) ease;
+}
+.badge-shape--morph-to-circle {
+  animation: badge-morph-diamond-circle var(--badge-morph-ms) ease;
+}
+:root {
+  --badge-morph-ms: 0.62s;
+}
+@keyframes badge-morph-circle-triangle {
+  0%,
+  100% {
+    clip-path: polygon(
+      29.3% 0%,
+      70.7% 0%,
+      100% 29.3%,
+      100% 70.7%,
+      70.7% 100%,
+      29.3% 100%,
+      0% 70.7%,
+      0% 29.3%
+    );
+  }
+  50% {
+    clip-path: polygon(
+      50% 0%,
+      66.67% 33.33%,
+      83.33% 66.67%,
+      100% 100%,
+      66.67% 100%,
+      33.33% 100%,
+      0% 100%,
+      25% 50%
+    );
+  }
+}
+@keyframes badge-morph-triangle-square {
+  0%,
+  100% {
+    clip-path: polygon(
+      50% 0%,
+      66.67% 33.33%,
+      83.33% 66.67%,
+      100% 100%,
+      66.67% 100%,
+      33.33% 100%,
+      0% 100%,
+      25% 50%
+    );
+  }
+  50% {
+    clip-path: polygon(
+      0% 0%,
+      50% 0%,
+      100% 0%,
+      100% 50%,
+      100% 100%,
+      50% 100%,
+      0% 100%,
+      0% 50%
+    );
+  }
+}
+@keyframes badge-morph-square-diamond {
+  0%,
+  100% {
+    clip-path: polygon(
+      0% 0%,
+      50% 0%,
+      100% 0%,
+      100% 50%,
+      100% 100%,
+      50% 100%,
+      0% 100%,
+      0% 50%
+    );
+  }
+  50% {
+    clip-path: polygon(
+      50% 0%,
+      75% 25%,
+      100% 50%,
+      75% 75%,
+      50% 100%,
+      25% 75%,
+      0% 50%,
+      25% 25%
+    );
+  }
+}
+@keyframes badge-morph-diamond-circle {
+  0%,
+  100% {
+    clip-path: polygon(
+      50% 0%,
+      75% 25%,
+      100% 50%,
+      75% 75%,
+      50% 100%,
+      25% 75%,
+      0% 50%,
+      25% 25%
+    );
+  }
+  50% {
+    clip-path: polygon(
+      29.3% 0%,
+      70.7% 0%,
+      100% 29.3%,
+      100% 70.7%,
+      70.7% 100%,
+      29.3% 100%,
+      0% 70.7%,
+      0% 29.3%
+    );
+  }
+}
+.name-row {
+  margin-top: 0px;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.name {
+  font-family: "Shippori Mincho", "Noto Serif TC", serif;
+  font-size: 31px;
+  font-weight: 700;
+  color: var(--tx);
+}
+.handle {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px;
+  color: var(--dim);
+  margin-top: 6px;
+}
+.divider {
+  height: 1px;
+  background: var(--bd);
+  margin: 18px 0;
+}
+.label {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mute);
+  font-weight: 500;
+}
+.field {
+  margin-top: 10px;
+  background: var(--inset);
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 15px;
+  color: var(--tx);
+}
+.roles {
+  margin-top: 10px;
+  background: var(--inset);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.role-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.role-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--panel2);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px;
+  color: var(--tx);
+  transition: filter 0.2s ease;
+}
+.role-chip:hover {
+  filter: brightness(1.15);
+}
+.role-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.role-dot.blue {
+  background: var(--blue);
+}
+.role-dot.purple {
+  background: var(--purple);
+}
+.mt16 {
+  margin-top: 18px;
+}
+
+/* ===========================================================================
+   Right column / hero
+   =========================================================================== */
+.right-col {
+  flex: 3 1 520px;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.hero {
+  border-radius: 0;
+  padding: 30px 32px;
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.hero-main {
+  min-width: 260px;
+  flex: 1 1 320px;
+}
+.hero-greet {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 16px;
+  color: var(--dim);
+}
+.hero-title {
+  font-size: 56px;
+  font-weight: 300;
+  color: var(--tx);
+  margin-top: 8px;
+  line-height: 0;
+}
+.hero-title b {
+  font-weight: 800;
+  color: var(--blue);
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.name-rotator {
+  position: relative;
+  display: inline-block;
+  vertical-align: baseline;
+  height: 1.18em;
+  overflow: hidden;
+  contain: paint;
+  clip-path: inset(0);
+  min-width: 4.8em;
+  will-change: transform;
+  transform: translate3d(0, 0.125em, 0);
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+/* 名字從 data-name 生出來，不放在 DOM 文字裡——理由見 NameRotator.tsx */
+.hero-sub {
+  font-size: 18px;
+  color: var(--dim);
+  margin-top: 2px;
+  line-height: 0.5;
+}
+.hero-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 33px;
+  flex-wrap: wrap;
+}
+.btn-primary,
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 999px;
+  padding: 10px 10px 10px 22px;
+  font-family: "Noto Sans TC", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    box-shadow 0.2s ease,
+    background 0.2s ease,
+    transform 0.15s ease;
+}
+.btn-primary:active,
+.btn-ghost:active {
+  transform: scale(0.96);
+}
+.btn-primary {
+  background: var(--btn);
+  color: var(--btntx);
+  border: none;
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--tx);
+  border: 1px solid var(--bd2);
+}
+.btn-ghost:hover {
+  background: var(--inset);
+  border-color: #8f9dc9;
+}
+.btn-arrow {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease;
+}
+.btn-primary:hover .btn-arrow {
+  transform: rotate(-45deg);
+  background: #21252b;
+  color: #8f9dc9;
+}
+.btn-ghost:hover .btn-arrow {
+  transform: rotate(-45deg);
+  background: #8f9dc9;
+  color: #21252b;
+}
+.btn-arrow.dark {
+  background: rgba(0, 0, 0, 0.12);
+}
+.btn-arrow.inset {
+  background: var(--inset);
+}
+.hero-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 16px;
+  justify-content: flex-end;
+  align-self: stretch;
+  padding-bottom: 6px;
+}
+.hero-face-mouse {
+  /* 跟著滑鼠稍微偏移的位移用這個補間，不然每個 mousemove 影格都用同一顆
+     transform 硬切會頓頓的。這層只管這件事，搖擺動畫另外分層見 .hero-face-track，
+     兩個都動 transform 疊在同一個元素上會互相打架 */
+  transition: transform 0.15s ease-out;
+}
+.hero-face-track {
+  display: grid;
+  cursor: pointer;
+}
+.hero-face {
+  grid-area: 1 / 1;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 40px;
+  font-weight: 700;
+  color: var(--mute);
+  opacity: 0.55;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  /* 兩個表情疊在同一個 grid cell，純靠 opacity 交叉淡入淡出切換，捲動來回
+     跨過邊界也只是讓這個 transition 反向播放，不會卡住 */
+  transition: opacity 0.35s ease;
+}
+/* 表情從 data-face 生出來，不放在 DOM 文字裡——理由見 HeroFace.tsx */
+.hero-face::before {
+  content: attr(data-face);
+}
+.hero-face:hover {
+  animation: itWiggle 0.75s ease-in-out;
+}
+/* 只暫停這兩張首頁卡片的裝飾動畫，不影響任何捲動連動或進場動畫。 */
+
+[data-animations-paused] .tiles-row,
+[data-animations-paused] .hero-face-track,
+[data-animations-paused] .hero-face {
+  animation-play-state: paused;
+}
+
+/* ===========================================================================
+   Quote + floating tiles
+   =========================================================================== */
+.quote-card {
+  padding: 44px 40px 0;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-height: 250px;
+}
+.quote-main {
+  padding-bottom: 36px;
+  position: relative;
+  z-index: 1;
+}
+.quote-text {
+  font-family: "LXGWHeartSerif", "Shippori Mincho", "Noto Serif TC", serif;
+  font-size: 40px;
+  line-height: 1.5;
+  color: var(--tx);
+  font-weight: 400;
+}
+.tiles-strip {
+  position: absolute;
+  right: -170px;
+  bottom: -96px;
+  overflow: hidden;
+  width: 650px;
+  height: 230px;
+  transform: rotate(-38deg);
+  transform-origin: center;
+  pointer-events: none;
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 6%,
+    black 94%,
+    transparent
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 6%,
+    black 94%,
+    transparent
+  );
+}
+.tiles-row {
+  display: flex;
+  width: max-content;
+  animation: itMarquee 22s linear infinite;
+}
+.tiles-row-lower {
+  margin-top: -1px;
+  transform: translateX(-128px);
+  animation-duration: 26s;
+}
+.tiles-row-group {
+  display: flex;
+  gap: 12px;
+  padding: 8px 12px;
+  flex-shrink: 0;
+}
+.tile {
+  position: relative;
+  width: 84px;
+  height: 84px;
+  border-radius: 20px;
+  overflow: hidden;
+  flex: none;
+}
+.quote-tech-panel {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-content: center;
+  justify-content: center;
+  padding: 24px 26px;
+  background: color-mix(in srgb, var(--panel) 96%, transparent);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  transform: scale(0.985);
+  pointer-events: none;
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s ease;
+}
+.quote-card:hover .quote-tech-panel {
+  opacity: 1;
+  transform: scale(1);
+}
+.quote-tech-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: max-content;
+  max-width: 100%;
+  padding: 6px 8px;
+  background: var(--inset);
+}
+.quote-tech-icon {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  overflow: hidden;
+  flex: none;
+}
+.quote-tech-name {
+  min-width: 0;
+  color: var(--tx);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+
+.bento {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  grid-auto-rows: minmax(158px, auto);
+  grid-template-areas:
+    "likes     likes     thoughts   thoughts"
+    "likes     likes     experience friends"
+    "projects  projects  experience friends";
+  gap: 18px;
+}
+.bento-thoughts {
+  grid-area: thoughts;
+}
+/* Just a colored kicker marks the smallest card apart from the other two
+   text-cards — no fill, no rail. */
+.bento-likes {
+  grid-area: likes;
+}
+.bento-friends {
+  grid-area: friends;
+}
+.bento-experience {
+  grid-area: experience;
+}
+.bento-projects {
+  grid-area: projects;
+}
+.card-github {
+  padding: 28px 30px;
+}
+
+/* ---- Likes (overlay removed) ---- */
+.card-likes {
+  min-height: 236px;
+  height: 100%;
+  background: var(--panel);
+  border-radius: 0;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  text-align: left;
+  display: block;
+}
+.card-likes-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 62% 42%;
+  opacity: 0.24;
+  transform: scale(1.5);
+  transform-origin: 62% 42%;
+  transition:
+    opacity 0.6s cubic-bezier(0.33, 1, 0.68, 1),
+    transform 1.1s cubic-bezier(0.33, 1, 0.68, 1);
+}
+.card-likes:hover .card-likes-img {
+  opacity: 0.34;
+  transform: scale(1.62);
+}
+.card-title-lg {
+  transition: transform 0.6s cubic-bezier(0.33, 1, 0.68, 1);
+}
+.card-likes:hover .card-title-lg {
+  transform: translateX(3px);
+}
+.card-body {
+  position: relative;
+  padding: 28px 30px;
+}
+.card-kicker {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--mute);
+}
+.card-title-lg {
+  font-family: "Shippori Mincho", "Noto Serif TC", serif;
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--tx);
+  margin-top: 8px;
+}
+.card-arrow-lg {
+  position: absolute;
+  right: 22px;
+  bottom: 22px;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: 1px solid var(--bd2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: var(--tx);
+  background: rgba(0, 0, 0, 0.22);
+  transform: rotate(45deg);
+  transition:
+    transform 0.6s cubic-bezier(0.33, 1, 0.68, 1),
+    border-color 0.45s ease,
+    background 0.45s ease;
+}
+.card-likes:hover .card-arrow-lg {
+  border-color: var(--blue);
+  background: rgba(0, 0, 0, 0.34);
+  transform: rotate(0deg);
+}
+
+/* ---- Projects (full-width bottom) ---- */
+.card-projects {
+  min-height: 120px;
+  background: var(--panel);
+  border-radius: 0;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  text-align: left;
+  display: block;
+}
+.card-projects-glyph {
+  position: absolute;
+  right: -14px;
+  top: -10px;
+  width: 120px;
+  height: 120px;
+  opacity: 0.07;
+  transform-origin: top right;
+  transition:
+    transform 0.8s cubic-bezier(0.33, 1, 0.68, 1),
+    opacity 0.6s ease;
+}
+.card-projects:hover .card-projects-glyph {
+  transform: scale(1.08) rotate(-4deg);
+  opacity: 0.11;
+}
+.card-title-md {
+  transition: transform 0.6s cubic-bezier(0.33, 1, 0.68, 1);
+}
+.card-projects:hover .card-title-md {
+  transform: translateX(3px);
+}
+.card-body-sm {
+  position: relative;
+  padding: 22px 24px;
+}
+.card-title-md {
+  font-family: "Shippori Mincho", "Noto Serif TC", serif;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--tx);
+  margin-top: 6px;
+}
+.card-arrow-sm {
+  position: absolute;
+  right: 18px;
+  bottom: 16px;
+  font-size: 20px;
+  color: var(--dim);
+  transform: rotate(45deg);
+  transition:
+    transform 0.6s cubic-bezier(0.33, 1, 0.68, 1),
+    color 0.45s ease;
+}
+.card-projects:hover .card-arrow-sm {
+  color: var(--blue);
+  transform: rotate(0deg);
+}
+
+/* ---- Nav cards (友鏈 / 經歷) ---- */
+.nav-card {
+  position: relative;
+  height: 100%;
+  min-height: 108px;
+  background: var(--panel);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 22px 24px;
+  transition: background 0.2s ease;
+}
+.nav-card:hover {
+  background: var(--panel2);
+}
+.nav-card-ghost {
+  position: absolute;
+  bottom: -22px;
+  right: -6px;
+  font-family: "ChenYuLuoYan", "Dancing Script", cursive;
+  font-size: 130px;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--tx) 5%, transparent);
+  pointer-events: none;
+  line-height: 1;
+  user-select: none;
+  transition:
+    transform 0.65s cubic-bezier(0.33, 1, 0.68, 1),
+    color 0.45s ease;
+}
+.nav-card:hover .nav-card-ghost {
+  transform: translate(4px, -8px) rotate(-4deg);
+  color: color-mix(in srgb, var(--blue) 13%, transparent);
+}
+.nav-card-title {
+  position: relative;
+  display: inline-block;
+  font-family: "Shippori Mincho", "Noto Serif TC", serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--tx);
+  margin-top: 8px;
+  transition: transform 0.6s cubic-bezier(0.33, 1, 0.68, 1);
+}
+.nav-card-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -7px;
+  width: 100%;
+  height: 2px;
+  background: var(--blue);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.55s cubic-bezier(0.33, 1, 0.68, 1);
+}
+.nav-card:hover .nav-card-title {
+  transform: translateX(3px);
+}
+.nav-card:hover .nav-card-title::after {
+  transform: scaleX(1);
+}
+.nav-card .card-kicker {
+  transition: color 0.45s ease;
+}
+.nav-card:hover .card-kicker {
+  color: var(--blue);
+}
+.nav-card-arrow {
+  position: absolute;
+  right: 18px;
+  bottom: 16px;
+  font-size: 18px;
+  color: var(--dim);
+  transform: rotate(45deg);
+  transition:
+    transform 0.6s cubic-bezier(0.33, 1, 0.68, 1),
+    color 0.45s ease;
+}
+.nav-card:hover .nav-card-arrow {
+  color: var(--blue);
+  transform: rotate(0deg);
+}
+
+/* Light mode: a hovered card gets a subtle dark overlay (dark mode brightens
+   instead, so this is scoped to the light theme only). */
+:root[data-theme="light"] .card-likes::after,
+:root[data-theme="light"] .card-projects::after,
+:root[data-theme="light"] .nav-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+  z-index: 3;
+}
+:root[data-theme="light"] .card-likes:hover::after,
+:root[data-theme="light"] .card-projects:hover::after,
+:root[data-theme="light"] .nav-card:hover::after {
+  opacity: 0.08;
+}
+
+
+.page-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 26px;
+}
+.back-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--bd2);
+  background: var(--inset);
+  color: var(--tx);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+}
+.back-btn:hover {
+  transform: translateX(-3px);
+}
+.back-btn:active {
+  transform: translateX(-3px) scale(0.85);
+}
+.page-title {
+  font-family: "Shippori Mincho", "Noto Serif TC", serif;
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--tx);
+  margin: 2px 0 0;
+}
+
+
+/* About */
+.about-grid {
+  display: grid;
+  grid-template-columns: minmax(280px, 2fr) minmax(240px, 1fr);
+  grid-template-rows: auto 1fr auto;
+  gap: 20px;
+}
+.about-main {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  min-width: 0;
+  background: var(--panel);
+  border-radius: 0;
+  padding: 30px 32px;
+  box-shadow: none;
+}
+.about-lead {
+  font-family: "Shippori Mincho", "Noto Serif TC", serif;
+  font-size: 24px;
+  color: var(--tx);
+  font-weight: 600;
+}
+.about-p {
+  color: var(--dim);
+  font-size: 15px;
+  line-height: 2;
+  margin: 16px 0 0;
+}
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+.stat {
+  background: var(--inset);
+  padding: 14px;
+}
+.stat-k {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  color: var(--mute);
+  letter-spacing: 0.1em;
+}
+.stat-v {
+  font-family: "Shippori Mincho", "Noto Serif TC", serif;
+  font-size: 18px;
+  color: var(--tx);
+  margin-top: 5px;
+}
+.stat-v.mono {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 15px;
+  margin-top: 7px;
+}
+.about-side {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--panel2);
+  border-radius: 0;
+  overflow: hidden;
+  box-shadow: none;
+}
+.about-side img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  display: block;
+  flex: none;
+}
+.about-side-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px;
+}
+.about-side-v {
+  margin-top: 8px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 16px;
+  color: var(--tx);
+}
+.about-side-quote {
+  margin-top: 8px;
+  font-family: "Shippori Mincho", "Noto Serif TC", serif;
+  font-size: 19px;
+  line-height: 1.7;
+  color: var(--tx);
+}
+.mini-card {
+  position: relative;
+  min-height: 208px;
+  overflow: hidden;
+  background: var(--panel);
+  padding: 24px 26px;
+}
+.mini-kicker {
+  position: relative;
+  z-index: 1;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--mute);
+}
+.mini-arrow {
+  position: absolute;
+  z-index: 1;
+  right: 20px;
+  bottom: 20px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 1px solid var(--bd2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: var(--tx);
+  background: var(--panel2);
+  transform: rotate(45deg);
+  transition:
+    transform 0.6s cubic-bezier(0.33, 1, 0.68, 1),
+    border-color 0.45s ease;
+}
+.mini-card:hover .mini-arrow {
+  border-color: var(--blue);
+  transform: rotate(0deg);
+}
+
+/* ---- Interest card ---- */
+.mini-interest {
+  grid-column: 1;
+  grid-row: 3;
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+.mini-interest-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.22;
+  transform: scale(1.35);
+  transform-origin: 60% 32%;
+  transition:
+    opacity 0.6s cubic-bezier(0.33, 1, 0.68, 1),
+    transform 1.1s cubic-bezier(0.33, 1, 0.68, 1);
+}
+.mini-card:hover .mini-interest-bg {
+  opacity: 0.34;
+  transform: scale(1.5);
+}
+.mini-interest-title {
+  position: relative;
+  z-index: 1;
+  margin-top: 6px;
+  font-family: "Shippori Mincho", "Noto Serif TC", serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--tx);
+  transition: transform 0.6s cubic-bezier(0.33, 1, 0.68, 1);
+}
+.mini-card:hover .mini-interest-title {
+  transform: translateX(3px);
+}
+.mini-interest-stack {
+  position: relative;
+  z-index: 1;
+  height: 66px;
+  margin-top: 18px;
+}
+.mini-interest-stack-img {
+  --i: 0;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 46px;
+  height: 64px;
+  object-fit: cover;
+  border: 2px solid var(--panel);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  transform: translateX(calc(var(--i) * 26px))
+    rotate(calc((var(--i) - 1.5) * 8deg));
+  transition: transform 0.55s cubic-bezier(0.33, 1, 0.68, 1);
+}
+.mini-interest:hover .mini-interest-stack-img {
+  transform: translateX(calc(var(--i) * 40px))
+    rotate(calc((var(--i) - 1.5) * 8deg)) translateY(-6px);
+}
+
+/* ---- Music card ---- */
+.mini-music {
+  grid-column: 2;
+  grid-row: 2 / 4;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Light mode: neko.webp/nacho.webp are pale pastel art, so a normal blend at
+   low opacity washes out against the light panel. Multiply keeps the
+   artwork's darker tones visible instead of fading to near-white. */
+:root[data-theme="light"] .mini-interest-bg {
+  opacity: 0.4;
+  mix-blend-mode: multiply;
+}
+:root[data-theme="light"] .mini-card:hover .mini-interest-bg {
+  opacity: 0.7;
+}
+.proj-card {
+  background: var(--panel);
+  border-radius: 0;
+  padding: 22px 24px;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.proj-card:hover .proj-cover {
+  transform: scale(1.06);
+  filter: brightness(1.05);
+}
+.proj-card:hover .proj-arrow {
+  transform: translate(3px, -3px);
+}
+.proj-cover-wrap {
+  overflow: hidden;
+  background: var(--inset);
+}
+.proj-cover {
+  display: block;
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  transition:
+    transform 0.4s cubic-bezier(0.33, 1, 0.68, 1),
+    filter 0.25s ease;
+}
+.proj-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.proj-top-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.proj-icon {
+  position: relative;
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  overflow: hidden;
+  flex: none;
+  display: grid;
+  place-items: center;
+}
+.proj-icon img {
+  width: 18px !important;
+  height: 18px !important;
+}
+.proj-kicker {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+}
+.proj-kicker.blue {
+  color: var(--blue);
+}
+.proj-kicker.purple {
+  color: var(--purple);
+}
+.proj-title {
+  font-family: "Shippori Mincho", "Noto Serif TC", serif;
+  font-size: 22px;
+  color: var(--tx);
+}
+.proj-desc {
+  color: var(--dim);
+  font-size: 13px;
+  line-height: 1.8;
+}
+.proj-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.proj-tag {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  color: var(--dim);
+  background: var(--inset);
+  border-radius: 6px;
+  padding: 4px 8px;
+}
+.proj-arrow {
+  color: var(--dim);
+  font-size: 18px;
+  display: inline-block;
+  transition: transform 0.25s ease;
+}
+
+@media (max-width: 1080px) {
+  .home-grid {
+    grid-template-columns: 1fr;
+  }
+  .profile {
+    position: static;
+    max-width: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .roles {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .role-row {
+    gap: 6px;
+  }
+  .bento {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "likes      likes"
+      "likes      likes"
+      "thoughts   experience"
+      "friends    experience"
+      "projects   projects";
+  }
+}
+
+@media (max-width: 960px) {
+  .nav-toggle {
+    display: flex;
+  }
+  .nav {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  /* circle 版另外處理：這條原本連 .likes-grid--circle 一起蓋成固定兩欄，
+     圓形頭貼卻還是吃 180px 的寬度，欄位一窄頭貼就直接疊到隔壁去 */
+  .likes-grid:not(.likes-grid--circle) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .proj-desc {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .bento {
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: minmax(100px, auto);
+    grid-template-areas:
+      "likes        likes"
+      "experience   thoughts"
+      "experience   friends"
+      "projects     projects";
+  }
+  .bento-friends .nav-card-ghost,
+  .bento-thoughts .nav-card-ghost {
+    display: none;
+  }
+  .profile {
+    max-width: none;
+  }
+  .hero-title {
+    font-size: 44px;
+  }
+  .hero-greet {
+    font-size: 14px;
+  }
+  .hero-sub {
+    font-size: 16px;
+  }
+  .quote-card {
+    padding: 30px 30px 0;
+    min-height: 280px;
+  }
+  .quote-text {
+    font-size: 30px;
+  }
+  .quote-tech-panel {
+    padding: 14px 16px;
+    gap: 6px;
+  }
+  .quote-tech-item {
+    padding: 5px 7px;
+  }
+  .quote-tech-icon {
+    width: 22px;
+    height: 22px;
+  }
+  /* 方塊縮到 22px，圖示跟著縮一號。選擇器對的是 TileIcon 內層那顆 span
+     （它用 background-image，不是 <img>）；尺寸是 inline style，只有
+     !important 蓋得過。桌機版的 18px 直接由 page.tsx 的 size prop 給。 */
+  .quote-tech-icon span {
+    width: 15px !important;
+    height: 15px !important;
+  }
+  .quote-tech-name {
+    font-size: 10px;
+  }
+  .card-title-lg {
+    font-size: 32px;
+  }
+  .card-github {
+    padding: 20px 16px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .card-github::-webkit-scrollbar {
+    display: none;
+  }
+  /* Experience timeline: ghost year overlaps card on narrow screens */
+  .about-side img {
+    height: 150px;
+  }
+  .profile-banner {
+    height: clamp(120px, 32vw, 180px);
+  }
+  .about-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+  }
+  .about-main,
+  .about-side {
+    grid-column: 1;
+    grid-row: auto;
+  }
+  .mini-interest,
+  .mini-music {
+    display: none;
+  }
+}
+
+/* Very small screens: hero side panel crowds the main content */
+@media (max-width: 540px) {
+  .hero-side {
+    display: none;
+  }
+  .hero-title {
+    font-size: clamp(36px, 11vw, 44px);
+  }
+}
+

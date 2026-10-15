@@ -13,18 +13,14 @@
     "resume": "node scripts/generate-resumes.mjs"
   },
   "dependencies": {
-    "@fontsource-variable/manrope": "^5.2.0",
-    "@fontsource-variable/noto-sans-thai": "^5.2.0",
-    "clsx": "^2.1.1",
     "framer-motion": "^12.23.0",
+    "lenis": "1.3.25",
     "lucide-react": "^0.468.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "react-router-dom": "^7.9.0",
-    "tailwind-merge": "^3.3.1"
+    "react-router-dom": "^7.9.0"
   },
   "devDependencies": {
-    "@pdf-lib/fontkit": "^1.1.1",
     "@playwright/test": "^1.56.0",
     "@tailwindcss/vite": "^4.1.14",
     "@types/node": "^24.0.0",

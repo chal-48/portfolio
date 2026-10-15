@@ -1,76 +1,319 @@
 {
-  "isDemo": true,
-  "name": { "th": "ชื่อของคุณ", "en": "Your Name" },
-  "initials": "CE",
-  "portrait": null,
-  "role": { "th": "นักศึกษาวิศวกรรมคอมพิวเตอร์", "en": "Computer Engineering Student" },
-  "tagline": { "th": "ชอบเรียนรู้ และลงมือสร้างสิ่งใหม่", "en": "Curious by nature. A builder at heart." },
-  "bio": {
-    "th": "พื้นที่เล็ก ๆ สำหรับแนะนำตัว บอกเล่าสิ่งที่สนใจ และรวบรวมสิ่งที่ได้เรียนรู้จากการลงมือทำ ข้อความส่วนนี้จะเปลี่ยนเป็นเรื่องราวของคุณเมื่อได้รับรายละเอียดส่วนตัว",
-    "en": "A little corner of the internet to share interests, projects, and lessons learned along the way. This introduction will become your story once your personal details are added."
+  "isDemo": false,
+  "name": {
+    "th": "ชาลิสา ลางชัย",
+    "en": "Chalisa Langchai"
   },
-  "goal": { "th": "เล่าเป้าหมายของคุณที่นี่ เช่น สายงานที่อยากพัฒนา ปัญหาที่อยากแก้ และสิ่งที่อยากเรียนรู้ต่อ", "en": "Share your goals here: the field you want to grow in, the problems you want to solve, and what you want to learn next." },
+  "initials": "CL",
+  "portrait": "/project-placeholders/profile.jpg",
+  "role": {
+    "th": "นักศึกษาเทคโนโลยีวิศวกรรมอิเล็กทรอนิกส์ แขนงวิชาคอมพิวเตอร์",
+    "en": "Electronics Engineering Technology - Computer Student"
+  },
+  "tagline": {
+    "th": "ชอบเรียนรู้ และลงมือสร้างสิ่งใหม่",
+    "en": "Curious by nature. A builder at heart."
+  },
+  "bio": {
+    "th": "เป็นนักศึกษาปี 4 ที่ KMUTNB เรียนทั้งการเขียนโปรแกรมและอิเล็กทรอนิกส์ เขียนโค้ดได้ อ่านวงจรไฟฟ้าได้นิดหน่อย\n\nฉันสนใจเทคโนโลยีและชอบสงสัยว่าสิ่งต่าง ๆ ทำงานยังไง โดยเฉพาะเวลาที่ได้ลองเขียนอะไรขึ้นมาเอง แล้วมันทำงานได้จริง ๆ ถึงบางครั้งจะนั่งงงกับโค้ดของตัวเองก็เถอะ\n\nเมื่อก่อนฉันชอบเลี่ยงโจทย์ยาก ๆ เพราะคิดว่าตัวเองคงทำไม่ได้ แต่พอได้ลองทำด้วยตัวเองจริง ๆ ก็พบว่า เอ๊ะ มันก็ไม่ได้ยากอย่างที่คิดนี่นา หลังจากนั้นมาเลยพยายามลองลงมือทำก่อน โดยไม่ด่วนตัดสินว่าตัวเองทำไม่ได้\n\nเรื่องการสื่อสารก็เหมือนกัน ยอมรับว่าเป็นคนที่สื่อสารไม่ค่อยเก่งเอาซะเลย ตอนนี้ก็กำลังเรียนรู้และพยายามหาวิธีทำให้ตัวเองสื่อสารได้ดีขึ้น\n\nถ้าถามว่าตอนนี้พอใจกับตัวเองหรือยัง ก็คงตอบว่ายัง มีอีกหลายอย่างที่อยากเรียนรู้และอยากทำให้ได้",
+    "en": "I'm a fourth-year student at KMUTNB. I study programming and electronics. I can write code and read a little about electronic circuits.\n\nI'm interested in technology and how things work. I like writing code and seeing it work. But sometimes, I still get confused by my own code, haha.\n\nI used to avoid hard problems because I thought I couldn't do them. But when I tried, I found that some things were not as hard as I thought. Now, I try first before telling myself I can't do it.\n\nI'm also not very good at talking to people. I know that, so I'm learning how to communicate better, little by little.\n\nAm I happy with myself right now? Hmm... not yet. There are still many things I want to learn and try."
+  },
+  "goal": {
+    "th": "ต้องการพัฒนาความเข้าใจด้านการออกแบบระบบหลังบ้าน โครงสร้างฐานข้อมูล และการทดสอบซอฟต์แวร์ให้ลึกขึ้น พร้อมต่อยอดทักษะฝั่ง Frontend เพื่อสร้างแอปพลิเคชันที่ทำงานได้ครบกระบวนการ โดยให้ความสำคัญกับโค้ดที่อ่านเข้าใจง่าย การแก้ปัญหาอย่างเป็นระบบ และการเรียนรู้เทคโนโลยีใหม่ผ่านการใช้งานจริง",
+    "en": "I want to deepen my understanding of backend architecture, database design, and software testing while strengthening my frontend skills to build complete applications. My focus is on writing clear code, solving problems systematically, and learning new technologies through practical use."
+  },
   "education": {
-    "university": { "th": "ชื่อมหาวิทยาลัยของคุณ", "en": "Your University" },
-    "degree": { "th": "วิศวกรรมคอมพิวเตอร์", "en": "Computer Engineering" },
-    "year": null,
-    "gpa": null,
-    "period": { "th": "เพิ่มช่วงเวลาที่ศึกษา", "en": "Add your study period" },
-    "courses": [
-      { "th": "ตัวอย่าง: โครงสร้างข้อมูลและอัลกอริทึม", "en": "Example: Data Structures & Algorithms" },
-      { "th": "ตัวอย่าง: ระบบฐานข้อมูล", "en": "Example: Database Systems" },
-      { "th": "ตัวอย่าง: สถาปัตยกรรมคอมพิวเตอร์", "en": "Example: Computer Architecture" }
-    ]
+    "university": {
+      "th": "มหาวิทยาลัยเทคโนโลยีพระจอมเกล้าพระนครเหนือ",
+      "en": "King Mongkut's University of Technology North Bangkok"
+    },
+    "degree": {
+      "th": "เทคโนโลยีวิศวกรรมอิเล็กทรอนิกส์ แขนงวิชาคอมพิวเตอร์",
+      "en": "Electronics Engineering Technology - Computer"
+    },
+    "year": 4,
+    "gpa": 3.24,
+    "period": {
+      "th": "2566 - คาดว่าจะจบในปี 2570",
+      "en": "2023 - Expected 2027"
+    }
   },
   "interests": [
-    { "th": "พัฒนาเว็บ", "en": "Web development" },
-    { "th": "ออกแบบระบบ", "en": "System design" },
-    { "th": "ระบบสมองกลฝังตัว", "en": "Embedded systems" }
+    {
+      "th": "การพัฒนาเว็บแบบ Full Stack",
+      "en": "Full-Stack Web Development"
+    },
+    {
+      "th": "ระบบหลังบ้านและฐานข้อมูล",
+      "en": "Backend Systems & Databases"
+    },
+    {
+      "th": "ระบบฝังตัวและการเชื่อมต่ออุปกรณ์",
+      "en": "Embedded Systems & Hardware Integration"
+    }
   ],
   "email": "chalisa4824@gmail.com",
-  "github": null,
-  "linkedin": null,
+  "github": "https://github.com/chal-48",
+  "linkedin": "https://www.linkedin.com/in/chalisa-langchai-625198429",
   "otherContacts": [],
   "resume": {
     "th": "/resume/resume-th.pdf",
     "en": "/resume/resume-en.pdf"
   },
   "skills": [
-    { "id": "languages", "label": { "th": "ภาษาโปรแกรม", "en": "Languages" }, "description": { "th": "ภาษาที่ใช้สื่อสารแนวคิดให้คอมพิวเตอร์เข้าใจ", "en": "Turning ideas into instructions a computer understands." }, "items": ["Python", "JavaScript", "TypeScript", "C / C++"] },
-    { "id": "frameworks", "label": { "th": "Framework และไลบรารี", "en": "Frameworks & libraries" }, "description": { "th": "เครื่องมือสำหรับประกอบไอเดียให้เป็นแอปพลิเคชัน", "en": "The building blocks that bring applications to life." }, "items": ["React", "Node.js", "Tailwind CSS", "Express"] },
-    { "id": "databases", "label": { "th": "ฐานข้อมูล", "en": "Databases" }, "description": { "th": "จัดเก็บ ออกแบบ และเชื่อมโยงข้อมูลอย่างเป็นระบบ", "en": "Organizing data and making useful connections." }, "items": ["PostgreSQL", "MySQL", "SQLite"] },
-    { "id": "tools", "label": { "th": "เครื่องมือ", "en": "Tools & workflow" }, "description": { "th": "ตัวช่วยในการพัฒนา ทดสอบ และทำงานร่วมกัน", "en": "Making the process of building and collaborating smoother." }, "items": ["Git", "GitHub", "VS Code", "Docker", "Figma"] }
+    {
+      "id": "languages",
+      "label": {
+        "th": "ภาษาโปรแกรม",
+        "en": "Languages"
+      },
+      "description": {
+        "th": "ภาษาสำหรับพัฒนาเว็บ แอป และซอฟต์แวร์เชื่อมต่ออุปกรณ์",
+        "en": "Languages for web apps, mobile apps, and hardware integration."
+      },
+      "items": [
+        "Python",
+        "JavaScript",
+        "Dart",
+        "TypeScript",
+        "C / C++"
+      ]
+    },
+    {
+      "id": "frameworks",
+      "label": {
+        "th": "Framework และไลบรารี",
+        "en": "Frameworks & libraries"
+      },
+      "description": {
+        "th": "เครื่องมือสำหรับสร้างแอปมือถือ หน้าเว็บ และ Backend API",
+        "en": "Tools for building mobile apps, web interfaces, and backend APIs."
+      },
+      "items": [
+        "Flutter",
+        "Express",
+        "FastAPI",
+        "React",
+        "Node.js",
+        "Tailwind CSS"
+      ]
+    },
+    {
+      "id": "databases",
+      "label": {
+        "th": "ฐานข้อมูล",
+        "en": "Databases"
+      },
+      "description": {
+        "th": "จัดเก็บข้อมูลการจอง บัญชีผู้ใช้ และเพลย์ลิสต์",
+        "en": "Store booking records, user accounts, and playlists."
+      },
+      "items": [
+        "PostgreSQL",
+        "Cloud Firestore",
+        "MySQL",
+        "SQLite"
+      ]
+    },
+    {
+      "id": "tools",
+      "label": {
+        "th": "เครื่องมือและแพลตฟอร์ม",
+        "en": "Tools & platforms"
+      },
+      "description": {
+        "th": "เครื่องมือจัดการโค้ด พัฒนา UI และเชื่อมซอฟต์แวร์กับฮาร์ดแวร์",
+        "en": "Tools for version control, interface design, and hardware integration."
+      },
+      "items": [
+        "Git",
+        "GitHub",
+        "Raspberry Pi",
+        "ROS 2",
+        "VS Code",
+        "Docker",
+        "Figma"
+      ]
+    }
   ],
   "projects": [
     {
-      "id": "campus-companion", "category": "web", "featured": true, "visual": "campus", "year": "DEMO",
-      "title": { "th": "Campus Companion", "en": "Campus Companion" },
-      "summary": { "th": "ตัวอย่างเว็บจัดการตารางเรียนและงานของนักศึกษา", "en": "An illustrative student planner for classes and assignments." },
-      "description": { "th": "ตัวอย่างสำหรับแสดงรูปแบบการเล่าโปรเจกต์: เว็บที่รวมตารางเรียน งานที่ต้องส่ง และข้อมูลสำคัญไว้ในที่เดียว เพื่อช่วยให้นักศึกษาจัดการเวลาได้สะดวกขึ้น", "en": "An example of how a project can be presented: a web app that brings schedules, assignments, and important information into one place to help students organize their time." },
-      "role": { "th": "ตัวอย่าง: ออกแบบ UI และพัฒนาฝั่ง Frontend", "en": "Example: UI design and frontend development" },
-      "responsibilities": [{ "th": "ออกแบบหน้า Dashboard และลำดับการใช้งาน", "en": "Design the dashboard and user flows" }, { "th": "พัฒนาระบบกรองและค้นหาข้อมูล", "en": "Build filtering and search interactions" }, { "th": "ปรับการแสดงผลให้รองรับมือถือ", "en": "Make the interface work across screen sizes" }],
-      "outcome": { "th": "เพิ่มผลลัพธ์จริงของคุณที่นี่ เช่น สิ่งที่ทำสำเร็จ ปัญหาที่แก้ได้ หรือบทเรียนจากโปรเจกต์", "en": "Add your actual outcome here: what you built, a problem you solved, or a lesson learned." },
-      "tech": ["React", "TypeScript", "Tailwind CSS"], "sourceUrl": null, "demoUrl": null
+      "id": "vanvan",
+      "coverImage": "/project-placeholders/pj-vanvan.png",
+      "category": "web",
+      "featured": true,
+      "visual": "vanvan",
+      "year": "2026",
+      "title": {
+        "th": "VanVan — ระบบจองรถตู้",
+        "en": "VanVan — Van Booking"
+      },
+      "summary": {
+        "th": "เว็บจองรถตู้และแนบหลักฐานการชำระเงิน พร้อมระบบหลังบ้านสำหรับจัดการเส้นทาง รอบรถ และการจอง",
+        "en": "A van booking web app with payment-slip uploads and administration tools for routes, schedules, and reservations."
+      },
+      "description": {
+        "th": "VanVan เชื่อมขั้นตอนการจองของผู้โดยสารกับการจัดการของผู้ดูแล ผู้โดยสารสามารถสมัครสมาชิก ค้นหาเส้นทางและรอบรถ จองที่นั่ง และแนบหลักฐานการโอนเงิน ส่วนระบบหลังบ้านมีเครื่องมือจัดการเส้นทาง รอบรถ คนขับ และตรวจสอบหลักฐานเพื่อยืนยันหรือปฏิเสธการจอง พัฒนาด้วย HTML, CSS และ JavaScript เชื่อม REST API ด้วย Node.js และ Express ใช้ PostgreSQL จัดเก็บข้อมูลและ Supabase Storage เก็บไฟล์สลิป ขั้นตอนจองใช้ Transaction และ Row Lock เพื่อจัดการจำนวนที่นั่งเมื่อมีคำขอพร้อมกัน หน้าคนขับยังเป็นต้นแบบที่ใช้ข้อมูลจำลอง",
+        "en": "VanVan connects passenger reservations with administrative workflows. Passengers can register, browse routes and schedules, reserve a seat, and upload a payment slip. Administration tools cover routes, schedules, drivers, and manual approval or rejection of payment evidence. The HTML, CSS, and JavaScript frontend connects to a Node.js and Express REST API, with PostgreSQL for application data and Supabase Storage for uploaded slips. Booking transactions use row locks to coordinate seat availability across concurrent requests. The driver interface remains a prototype using mock data."
+      },
+      "role": {
+        "th": "พัฒนาเว็บและ API สำหรับระบบจองรถตู้",
+        "en": "Web and API development for van booking"
+      },
+      "responsibilities": [
+        {
+          "th": "พัฒนาหน้าค้นหารอบรถ จองที่นั่ง และอัปโหลดหลักฐานการชำระเงิน",
+          "en": "Develop schedule browsing, seat booking, and payment-slip upload interfaces."
+        },
+        {
+          "th": "เชื่อม REST API กับ PostgreSQL และใช้ Transaction กับ Row Lock ในขั้นตอนจอง",
+          "en": "Connect REST APIs to PostgreSQL and use transactions with row locks during booking."
+        },
+        {
+          "th": "พัฒนาระบบบัญชีด้วย JWT และ bcrypt พร้อมตรวจสิทธิ์ตามบทบาทใน Backend",
+          "en": "Implement accounts with JWT and bcrypt, with role checks in the backend."
+        },
+        {
+          "th": "เชื่อมการเก็บสลิป การตรวจสอบการจอง และลิงก์รีเซ็ตรหัสผ่านผ่านอีเมล",
+          "en": "Integrate slip storage, booking verification, and email-based password reset links."
+        }
+      ],
+      "outcome": {
+        "th": "ได้ต้นแบบเว็บที่เชื่อมการค้นหารอบรถ การจอง และการแนบหลักฐานการชำระเงินเข้ากับฐานข้อมูล พร้อม API สำหรับตรวจสอบการจองและจัดการรอบรถ โดยมีโครงสร้างรองรับการเผยแพร่บน Vercel",
+        "en": "Built a web prototype connecting schedule browsing, reservations, and payment-slip uploads to a database, with APIs for booking verification and schedule management and a deployment structure for Vercel."
+      },
+      "tech": [
+        "JavaScript",
+        "Express",
+        "PostgreSQL",
+        "HTML",
+        "CSS",
+        "Node.js",
+        "Supabase Storage",
+        "JWT",
+        "bcrypt",
+        "Resend",
+        "Vercel"
+      ],
+      "sourceUrl": "https://github.com/chal-48/software_project-html-version",
+      "demoUrl": "https://vanvan-booking.vercel.app/"
     },
     {
-      "id": "roomsense", "category": "iot", "featured": false, "visual": "sensor", "year": "DEMO",
-      "title": { "th": "RoomSense", "en": "RoomSense" },
-      "summary": { "th": "ตัวอย่างระบบเซนเซอร์และ Dashboard สำหรับห้องอัจฉริยะ", "en": "An illustrative sensor dashboard for a smarter room." },
-      "description": { "th": "ตัวอย่างโปรเจกต์ IoT ที่เชื่อมต่อเซนเซอร์เข้ากับ Dashboard เพื่อแสดงข้อมูลสภาพแวดล้อม ใช้เป็นแนวทางในการเล่าผลงานฮาร์ดแวร์และซอฟต์แวร์ของคุณ", "en": "An illustrative IoT project connecting sensors to an environmental dashboard. Use this structure to tell the story of your own hardware and software work." },
-      "role": { "th": "ตัวอย่าง: พัฒนา Firmware และเชื่อมต่อข้อมูล", "en": "Example: Firmware and data integration" },
-      "responsibilities": [{ "th": "อ่านค่าจากเซนเซอร์และจัดรูปแบบข้อมูล", "en": "Read sensors and structure their data" }, { "th": "เชื่อมต่ออุปกรณ์กับ Dashboard", "en": "Connect the device to a dashboard" }],
-      "outcome": { "th": "รอผลลัพธ์และรายละเอียดจากโปรเจกต์จริงของคุณ", "en": "Awaiting the outcome and details of your actual project." },
-      "tech": ["ESP32", "C++", "MQTT", "Python"], "sourceUrl": null, "demoUrl": null
+      "id": "music-app",
+      "coverImage": "/project-placeholders/pj-music-app.png",
+      "category": "mobile",
+      "featured": false,
+      "visual": "music",
+      "year": "2026",
+      "title": {
+        "th": "Music App — แอปค้นหาเพลง",
+        "en": "Music App — Music Discovery"
+      },
+      "summary": {
+        "th": "แอปค้นหาและฟังเพลงตัวอย่าง พร้อมระบบบัญชีผู้ใช้และเพลย์ลิสต์ส่วนตัว พัฒนาด้วย Flutter และ Firebase",
+        "en": "A Flutter and Firebase app for discovering music, playing audio previews, and managing personal playlists and accounts."
+      },
+      "description": {
+        "th": "แอปที่รวมการค้นหาเพลง การฟังเพลงตัวอย่าง และการจัดการคลังเพลงส่วนตัวไว้ในที่เดียว ดึงข้อมูลจาก iTunes Search API รองรับการสมัครสมาชิก เข้าสู่ระบบ และรีเซ็ตรหัสผ่านผ่าน Firebase Authentication พร้อมบันทึกเพลย์ลิสต์และรายการเพลงของแต่ละบัญชีใน Cloud Firestore ใช้ Provider จัดการสถานะเครื่องเล่นร่วมกันระหว่างหน้าจอ รองรับการเล่น หยุด เลื่อนตำแหน่งเพลง เล่นถัดไป สุ่มเพลง และเล่นซ้ำ",
+        "en": "An application combining music search, audio previews, and a personal music library. It retrieves tracks from the iTunes Search API, uses Firebase Authentication for registration, sign-in, and password resets, and stores each user's playlists and songs in Cloud Firestore. Provider shares playback state across screens, supporting play, pause, seeking, next and previous tracks, shuffle, and repeat."
+      },
+      "role": {
+        "th": "พัฒนาแอป Flutter และเชื่อมต่อบริการ Firebase",
+        "en": "Flutter application development and Firebase integration"
+      },
+      "responsibilities": [
+        {
+          "th": "พัฒนาหน้าแรก หน้าค้นหา คลังเพลง และหน้าควบคุมการเล่น",
+          "en": "Develop the home, search, library, and playback interfaces."
+        },
+        {
+          "th": "เชื่อม iTunes Search API เพื่อค้นหาเพลงและเล่นเสียงตัวอย่าง",
+          "en": "Integrate the iTunes Search API for music search and audio previews."
+        },
+        {
+          "th": "จัดการสถานะเครื่องเล่นร่วมกันด้วย Provider และ Audioplayers",
+          "en": "Manage shared playback state with Provider and Audioplayers."
+        },
+        {
+          "th": "เชื่อมระบบบัญชีและการจัดการเพลย์ลิสต์กับ Firebase Authentication และ Cloud Firestore",
+          "en": "Connect account and playlist workflows to Firebase Authentication and Cloud Firestore."
+        }
+      ],
+      "outcome": {
+        "th": "ได้ต้นแบบแอปที่รวมการค้นหาเพลง การเล่นเพลงตัวอย่าง และการจัดการเพลย์ลิสต์รายบุคคล พร้อมโครงสร้างจัดการสถานะเครื่องเล่นร่วมกันระหว่างหน้าจอ",
+        "en": "Built an app prototype combining music discovery, audio-preview playback, and personal playlists, with shared playback state across screens."
+      },
+      "tech": [
+        "Flutter",
+        "Dart",
+        "Firebase Authentication",
+        "Cloud Firestore",
+        "Provider",
+        "iTunes Search API",
+        "Audioplayers"
+      ],
+      "sourceUrl": "https://github.com/chal-48/music_app",
+      "demoUrl": null
     },
     {
-      "id": "tiny-cpu", "category": "systems", "featured": false, "visual": "chip", "year": "DEMO",
-      "title": { "th": "Tiny CPU", "en": "Tiny CPU" },
-      "summary": { "th": "ตัวอย่างการออกแบบหน่วยประมวลผลในวิชาดิจิทัล", "en": "An illustrative processor design for a digital systems course." },
-      "description": { "th": "ตัวอย่างการนำเสนอโปรเจกต์ด้านระบบดิจิทัล ครอบคลุมแนวคิด การออกแบบส่วนประกอบ และวิธีทดสอบการทำงาน", "en": "An example presentation for a digital systems project, covering the concept, component design, and how the design is tested." },
-      "role": { "th": "ตัวอย่าง: ออกแบบ Datapath และทดสอบคำสั่ง", "en": "Example: Datapath design and instruction testing" },
-      "responsibilities": [{ "th": "ออกแบบ ALU และชุด Register", "en": "Design an ALU and register set" }, { "th": "ทดสอบวงจรด้วย Simulation", "en": "Test the circuit through simulation" }],
-      "outcome": { "th": "รอผลลัพธ์และรายละเอียดจากโปรเจกต์จริงของคุณ", "en": "Awaiting the outcome and details of your actual project." },
-      "tech": ["Verilog", "Digital Logic", "Simulation"], "sourceUrl": null, "demoUrl": null
+      "id": "rpi-autonomous-boat",
+      "coverImage": "/project-placeholders/pj-autoboatspray.png",
+      "category": "iot",
+      "featured": false,
+      "visual": "boat",
+      "year": "2026",
+      "title": {
+        "th": "Autonomous Boat — ต้นแบบระบบเรืออัตโนมัติ",
+        "en": "Autonomous Boat — Raspberry Pi Prototype"
+      },
+      "summary": {
+        "th": "ต้นแบบระบบจัดการภารกิจเรือบน Raspberry Pi ประกอบด้วย API ส่งสถานะผ่าน WebSocket การอ่าน LiDAR ด้วย ROS 2 และสคริปต์ทดสอบอุปกรณ์",
+        "en": "A Raspberry Pi boat-system prototype with mission APIs, WebSocket status updates, a ROS 2 LiDAR node, and hardware test scripts."
+      },
+      "description": {
+        "th": "พัฒนาส่วนประกอบซอฟต์แวร์สำหรับระบบเรืออัตโนมัติ ใช้ FastAPI รับข้อมูลจุดเริ่มต้น จุดผ่านทาง จุดสิ้นสุด และจัดการสถานะภารกิจ พร้อมเผยแพร่สถานะเรือผ่าน WebSocket ทุกหนึ่งวินาที ส่วน ROS 2 รับข้อมูล LiDAR เพื่อคำนวณระยะสิ่งกีดขวางด้านหน้า ซ้าย และขวา มีสคริปต์แยกอ่าน GPS ผ่าน Serial อ่านมุมเซนเซอร์ AS5600 ผ่าน I²C และทดสอบสัญญาณ PWM สำหรับไดรเวอร์ BTS7960 โครงการอยู่ในระยะพัฒนาและทดสอบส่วนประกอบ ยังไม่ได้เชื่อมเป็นระบบเดินเรือและหลบสิ่งกีดขวางครบวงจร",
+        "en": "Software components for an autonomous boat system. FastAPI accepts start points, waypoints, and end points and manages mission state, while WebSocket publishes boat status every second. A ROS 2 node processes LiDAR scans to calculate obstacle distances ahead, left, and right. Separate scripts read GPS over serial, measure AS5600 sensor angles over I²C, and test PWM signals for a BTS7960 motor driver. The project is at the component-development stage; end-to-end autonomous navigation and obstacle avoidance are not yet integrated."
+      },
+      "role": {
+        "th": "พัฒนา Backend และซอฟต์แวร์เชื่อมต่อเซนเซอร์บน Raspberry Pi",
+        "en": "Backend and Raspberry Pi sensor software development"
+      },
+      "responsibilities": [
+        {
+          "th": "พัฒนา API รับเส้นทางและจัดการสถานะเริ่ม หยุด และหยุดฉุกเฉินของภารกิจ",
+          "en": "Develop route-input APIs and mission states for start, stop, and emergency-stop requests."
+        },
+        {
+          "th": "ส่งข้อมูลสถานะเรือผ่าน WebSocket ทุกหนึ่งวินาที",
+          "en": "Publish boat-state updates over WebSocket every second."
+        },
+        {
+          "th": "สร้าง ROS 2 node แยกระยะสิ่งกีดขวางจาก LiDAR ตามทิศทาง",
+          "en": "Create a ROS 2 node to extract directional obstacle distances from LiDAR scans."
+        },
+        {
+          "th": "เขียนสคริปต์อ่าน GPS และ AS5600 พร้อมสคริปต์ทดสอบ PWM สำหรับ BTS7960",
+          "en": "Write GPS and AS5600 reading scripts and PWM test scripts for the BTS7960 driver."
+        }
+      ],
+      "outcome": {
+        "th": "ได้โครงสร้างซอฟต์แวร์ต้นแบบสำหรับจัดการข้อมูลภารกิจและเผยแพร่สถานะเรือ พร้อมโหนดอ่าน LiDAR และสคริปต์ทดสอบอุปกรณ์แยกส่วน เป็นพื้นฐานสำหรับเชื่อมระบบนำทางและควบคุมเรือในขั้นถัดไป",
+        "en": "Created a software foundation for mission data and boat-state updates, alongside a LiDAR-processing node and separate hardware test scripts, ready for further navigation and control integration."
+      },
+      "tech": [
+        "Python",
+        "Raspberry Pi",
+        "FastAPI",
+        "WebSocket",
+        "Pydantic",
+        "ROS 2",
+        "LiDAR",
+        "GPS",
+        "GPIO / PWM",
+        "I²C"
+      ],
+      "sourceUrl": "https://github.com/chal-48/rpi-autonomous-boat",
+      "demoUrl": null
     }
   ]
 }

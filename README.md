@@ -1,90 +1,116 @@
-# Computer Engineering Portfolio
+# Chalisa Langchai
 
-พอร์ตโฟลิโอ React + TypeScript + Vite ในแนว Clean Editorial หน้าแรกเป็น Interactive Editorial Index ที่เปิดหน้าแยก 5 หัวข้อ รองรับภาษาไทยและอังกฤษ
+Personal website built with React, TypeScript, and Vite. The current design directly adapts the Apache-2.0 styles from the local `itouSouta.me` reference: its exact color tokens, square panels, 360px profile column, 20px gaps, header, pill buttons, diagonal technology tiles, asymmetric bento layout, typography, and grain. The content is Chalisa's, in English only. The reference owner's photos, illustrations, project covers, accounts, and service integrations are excluded; their image positions use Chalisa's configured assets or remain available for replacement.
 
-## เปิดดูในเครื่อง
+## Run locally
 
-บน Windows ดับเบิลคลิก `start.cmd` เพื่อเริ่มเซิร์ฟเวอร์และเปิดเบราว์เซอร์ที่ `http://localhost:5173` ปิดหน้าต่างเซิร์ฟเวอร์เมื่อต้องการหยุด
-
-หรือใช้คำสั่งมาตรฐานเมื่อมี pnpm:
+On Windows, double-click `start.cmd`, or run:
 
 ```sh
 pnpm install
 pnpm dev
 ```
 
-โปรเจกต์นี้ติดตั้ง pnpm แบบเฉพาะโฟลเดอร์ไว้ใน `.tools` ด้วย หากเครื่องไม่มีคำสั่ง pnpm สามารถใช้:
+If pnpm is not on PATH, use the local installation:
 
 ```sh
 node .tools/node_modules/pnpm/bin/pnpm.mjs dev
 ```
 
-## หน้าที่มี
+## Pages
 
-- `/` หน้าปกและสารบัญโต้ตอบ About / Skills / Projects / Resume / Contact
-- `/about` แนะนำตัว ความสนใจ เป้าหมาย และการศึกษา
-- `/skills` ทักษะแบ่งตามหมวด
-- `/projects` แสดงโปรเจกต์แบบ Case Study Flip Stack ตามการเลื่อน
-- `/projects/:id` รายละเอียดแต่ละโปรเจกต์
-- `/resume` ปุ่มดาวน์โหลด Resume PDF ตามภาษาที่เลือก
-- `/contact` ช่องทางติดต่อ คัดลอกอีเมล และฟอร์มเปิดร่างในแอปอีเมล
+| Route | Content |
+| --- | --- |
+| `/` | Profile sidebar, introduction, technology strip, and five section links |
+| `/about` | Biography, education, learning goals, and interests |
+| `/skills` | Languages, frameworks, databases, and tools |
+| `/projects` | Three project cards with screenshots, search, and category filters |
+| `/projects/:id` | Overview, responsibilities, outcome, technologies, and code/demo links |
+| `/resume` | English PDF download, without a PDF preview |
+| `/contact` | Email, GitHub, LinkedIn, clipboard copy, and direct contact form |
+| `/credits` | Original project attribution and license links |
 
-หน้ารายละเอียดมีเมนูหัวข้อ ปุ่มก่อนหน้า/ถัดไป และปุ่มกลับหน้าหลัก ภาษาเลือกได้ทุกหน้าและจำด้วย localStorage รองรับมือถือ คีย์บอร์ด และการตั้งค่าลดแอนิเมชัน สารบัญหน้าแรกเปลี่ยน preview เมื่อ hover หรือ focus และใช้ปุ่มลูกศรเลื่อนระหว่างหัวข้อได้
+The header includes navigation, a persistent theme toggle, and site search with Ctrl/Cmd+K. The mobile menu uses the reference's fullscreen overlay and supports Escape and focus return. Each content page has home and adjacent section links. Animations respect reduced-motion preferences.
 
-## ใส่ข้อมูลส่วนตัว
+## Update your information
 
-แก้ข้อมูลที่ `src/content/portfolio.json` ข้อความทุกชุดมี `th` และ `en`:
+Edit `src/content/portfolio.json`. The website reads the `en` values. The `th` values remain available to the separate Thai PDF generator.
 
-- `name`, `role`, `tagline`, `bio`, `goal`: ชื่อและเรื่องราวของคุณ
-- `portrait`: พาธรูป เช่น `/images/portrait.jpg` แล้ววางไฟล์ใน `public/images/`
-- `education`: มหาวิทยาลัย สาขา ชั้นปี GPA และวิชาที่เกี่ยวข้อง
-- `interests`, `skills`: ความสนใจและทักษะจริง
-- `projects`: ผลงานจริง แต่ละโปรเจกต์มี id ไม่ซ้ำกัน บทบาท หน้าที่ เทคโนโลยี และผลลัพธ์
-- `projects[].sourceUrl`, `projects[].demoUrl`: URL จริง หรือ `null` เมื่อยังไม่มี
-- `email`, `github`, `linkedin`, `otherContacts`: ช่องทางติดต่อจริง
-- `resume`: พาธ PDF ภาษาไทยและอังกฤษ
-- `isDemo`: เปลี่ยนเป็น `false` เมื่อแทนที่ข้อมูลตัวอย่างด้วยข้อมูลจริงครบแล้ว
+- `name`, `initials`, `role`, `bio`, `goal`: identity and biography.
+- `portrait`: an image path such as `/images/portrait.jpg`. Put the file in `public/images/`. If absent, the original-sized circular photo position remains empty.
+- `education`: university, degree, year, GPA, period, and coursework.
+- `interests`, `skills`: interests and grouped skills.
+- `projects`: the real VanVan, Music App, and Autonomous Boat projects. Only VanVan has a live demo. Use `null` for unavailable links.
+- `email`, `github`, `linkedin`, `otherContacts`: contact details. Only existing channels are displayed; LinkedIn requires a public `/in/` profile URL.
+- `resume.en`: URL of the downloadable English PDF.
 
-โครงสร้างข้อความและทักษะปัจจุบันเป็น **ข้อมูลตัวอย่าง** ไม่มีการอ้างว่าเป็นผลงานหรือประสบการณ์จริงของเจ้าของพอร์ต ฟอนต์และภาพประกอบ UI อยู่ในโปรเจกต์ ไม่ต้องเรียกบริการภาพภายนอก
+The home greeting, profile labels, and layout are in `src/pages/Home.tsx`; the education facts read from the JSON. Active English UI labels are in `src/lib/i18n.tsx`. The site does not read older saved language preferences. Thai source content is retained for PDF generation.
 
-## Resume
+## Design files
 
-PDF ตัวอย่างทั้งสองภาษามีอยู่แล้วใน `public/resume/` สามารถแทนที่ด้วย Resume จริงในชื่อไฟล์เดิมได้ทันที
+- `src/reference.css`: adapted original layout rules and theme tokens. The original source's 1.15 desktop zoom and responsive breakpoints are retained.
+- `src/reference-fonts.css`: local Latin font faces for Noto Sans TC, JetBrains Mono, and Shippori Mincho. The logo uses the reference's ChenYuLuoYan font.
+- `src/site.css`: content adaptations, accessible controls, empty image positions, forms, and app-specific responsive styles.
+- `src/lib/theme.tsx`: theme state stored as `chalisa-theme` in localStorage.
+- `src/components/Layout.tsx`: header, mobile menu, grain overlay, page effects, and back-to-top button.
+- `src/components/SiteSearch.tsx`: search dialog for real pages and projects.
+- `src/pages/Home.tsx`: the five bento positions map to About (large image card), Skills (wide top-right), Resume (tall), Contact (tall), and Projects (bottom-left).
+- `src/pages/`: individual pages.
 
-หากต้องการสร้างเอกสารจากข้อมูลใน JSON ใหม่:
+The reference uses Next.js; this implementation keeps the existing React/Vite stack. Superseded designs, unused components, and their dependencies have been removed.
+
+Image positions have `data-image-slot` attributes in Home, About, and Projects, so actual images can be added without changing placement. The GitHub card now renders real contributions for the account in `portfolio.github`, using the public `github-contributions-api.jogruber.de` service (`?y=last`). No token is required. The service caches results for an hour; the site also caches successful responses in memory for an hour. Colors follow the active theme. Each square has a date/count tooltip, and the calendar scrolls horizontally on mobile. Failed requests show a retry button without inventing data.
+
+The contribution snake enters beside the first active date and uses shortest-path search to pursue the nearest remaining contribution while avoiding its own body. It clears visited contribution colors and fills a bar using the actual counts, then returns by a short route for the next loop. It does not sweep empty months and has no pause/play button. It pauses offscreen or in a hidden tab; reduced-motion mode shows the original static calendar. An empty calendar has no food or snake. This runs in the browser against current fetched data, without a GitHub token or scheduled Actions job. `src/lib/snake-route.ts` controls routing, `src/components/ContributionSnake.tsx` controls animation, and `GithubActivity.tsx` loads the data.
+
+The source license is retained in `public/licenses/itouSouta-Apache-2.0.txt`, and notices are in `public/third-party-notices.txt`. Font licenses are in `public/licenses/`. The font download helper `scripts/import-reference-fonts.mjs` restores the local Latin font assets; no font network requests are needed at runtime.
+
+## Resume PDFs
+
+The website downloads `public/resume/resume-en.pdf`. The existing Thai PDF is retained in `public/resume/resume-th.pdf`. Neither includes a phone number. Replace the PDF directly, or edit `src/content/resume.json` and regenerate:
 
 ```sh
-pnpm resume
+node scripts/generate-resumes.mjs --language=en
+node scripts/generate-resumes.mjs --language=th
 ```
 
-ฟอนต์ Noto Sans Thai และใบอนุญาต OFL อยู่ใน `public/fonts/` หากฟอนต์ถูกลบ ให้รัน `node scripts/generate-resumes.mjs --fetch-fonts` เพียงครั้งเดียวเพื่อดาวน์โหลดใหม่
+The generator also reads education, contacts, and project links from `portfolio.json`. Font selection and font sizes are in `scripts/generate-resumes.mjs`: `embeddedFontFaces`, the Thai CSS, and the English resume CSS. Both versions use Cambria; Thai characters use Noto Serif Thai because Cambria does not cover Thai. Cambria is read from Windows Fonts, or paths supplied in `RESUME_CAMBRIA_REGULAR` and `RESUME_CAMBRIA_BOLD`. Open font files and licenses are in `public/fonts/`.
 
-หน้า Resume แสดงเฉพาะปุ่มดาวน์โหลด PDF ไม่มีหน้าพรีวิว สามารถนำ Resume จริงมาแทนไฟล์เดิมได้ทันทีโดยไม่ต้องแก้หน้าเว็บ
+PDF generation uses Google Chrome via Playwright, checks for A4 page overflow, and saves HTML previews in `artifacts/`. To regenerate both PDFs, run `pnpm resume`.
 
-## การติดต่อ
+## Contact form
 
-ฟอร์มตรวจสอบชื่อ อีเมล หัวข้อ และข้อความ ก่อนเปิดร่าง `mailto:` ในแอปอีเมลของผู้ชม ผู้ชมเป็นผู้กดส่งเอง ไม่มีระบบส่งอีเมลจากเซิร์ฟเวอร์ และไม่เก็บข้อความไว้ภายนอก หาก `email` ยังเป็น `null` จะแสดงข้อความว่ารอเพิ่มผู้รับแทนการอ้างว่าส่งสำเร็จ
+The form validates name, email, subject, and a message of at least 10 characters, then submits directly through FormSubmit. `src/lib/contact.ts` controls the request; the destination comes from `email` in `src/content/portfolio.json`. The visitor's email is supplied as the reply-to address. The form displays sending, success, activation-required, and failure states, retains text on failure, and prevents duplicate requests while sending.
 
-## ตรวจสอบและ build
+The recipient must click **Activate Form** in the verification email from FormSubmit before messages can be delivered. An activation request for `chalisa4824@gmail.com` was accepted by FormSubmit on October 16, 2026; owner verification is still required. If FormSubmit requests verification again after deployment, submit from the deployed site and confirm the new activation email. Do not put private email-service keys into Vite client code. FormSubmit is an external service and receives the submitted contact details and message; the page includes a service disclosure. The separate email address link still opens an email app.
+
+The home greeting alternates between Chalisa and Aom. `src/pages/Home.tsx` defines these names; `src/site.css` controls their timing, shared photo color treatment, pointer-responsive skill cards, and other visual refinements. Page and search transitions respect reduced-motion settings. About displays study year, GPA, and the Computer major in three fact cards.
+
+Motion follows the local reference's settings: desktop Lenis 1.3.25 (`wheelMultiplier: 0.8`, `lerp: 0.1`, enabled above 760px), native mobile/reduced-motion scrolling, 0.45s ease page entrance without an outgoing-page delay, 0.55s header entrance, an 8s upward name loop, 1.1s photo/skill zoom, and 0.55s project-image stack transitions. Name rotation uses a duplicated first name for a continuous upward loop. Contact columns stretch to equal height on desktop. `src/components/SmoothScroll.tsx` controls scrolling; `Layout.tsx` coordinates it with navigation, search/menu locking, and back-to-top. The live snake follows the reference SVG's approximately 100ms per cell while pursuing Chalisa's own contributions.
+
+## Check and preview
 
 ```sh
 pnpm check
 pnpm build
 pnpm test:e2e
+node scripts/capture-preview.mjs
 ```
 
-ชุดทดสอบตรวจการนำทางจริง ภาษาและการจำค่า Flip Stack ดาวน์โหลดไฟล์ PDF ฟอร์ม การใช้คีย์บอร์ด และหน้าจอเล็ก ใช้ Google Chrome ที่ติดตั้งในเครื่อง สามารถกำหนดพาธเบราว์เซอร์อื่นผ่าน `PORTFOLIO_BROWSER`
+Playwright checks English-only content, configured photos, navigation, themes, deep links, site search, project filters, project links, PDF downloads, clipboard copy, direct contact submission, mobile menus, and narrow-screen overflow. Contact requests are mocked in automated tests and do not send real messages. `tests/refinements.spec.ts` also checks name rotation, About facts, skill hover, activation responses, and retry behavior. It uses locally installed Google Chrome; override the browser path with `PORTFOLIO_BROWSER`. Screenshots are saved in `artifacts/`.
 
-ไฟล์สำหรับเผยแพร่อยู่ใน `dist/` โปรเจกต์ใช้ BrowserRouter โฮสต์ต้องส่งเส้นทางหน้าเว็บกลับไป `index.html` มี `public/_redirects` สำหรับ Netlify/Cloudflare Pages และ `vercel.json` สำหรับ Vercel เตรียมไว้แล้ว ยังไม่ได้เผยแพร่หรือเชื่อมต่อบัญชีโฮสติ้ง
+Vite outputs the production site to `dist/`. BrowserRouter requires a rewrite to `index.html`; `vercel.json` and `public/_redirects` provide hosting rules. Local design changes are not deployed automatically by these commands.
 
-## คอมโพเนนต์และการออกแบบ
+## Credits
 
-Case Study Flip Stack ติดตั้งจาก [Componentry](https://componentry.dev/docs/components/case-study-flip-stack) แล้วปรับให้การ์ดแต่ละใบเชื่อมไปยังหน้ารายละเอียดโปรเจกต์:
+This portfolio website is based on [itouSouta.me](https://github.com/itousouta15/itouSouta.me), created by [itousouta15](https://github.com/itousouta15).
 
-```sh
-pnpm dlx shadcn@latest add @componentry/case-study-flip-stack
-```
+I use the original website as the base for my personal portfolio. I have changed the personal information, projects, and content to make it my own.
 
-หน้าแรกอยู่ใน `src/pages/Home.tsx` และใช้สารบัญที่เขียนเฉพาะเว็บนี้แทนการ์ดสำเร็จรูป การจัดวางและ motion เพิ่มเติมอยู่ใน `src/editorial.css` ส่วน `src/components/ui/case-study-flip-stack.tsx` ใช้ในหน้า Projects เท่านั้น
+Thanks to the original developer for sharing this project.
 
-ภาพชั่วคราวของโปรเจกต์อยู่ใน `public/project-placeholders/` และสามารถแทนที่ด้วย screenshot จริงได้ สีและระยะหลักของแนว Editorial อยู่ใน `src/editorial.css` ข้อความระบบทั้งสองภาษาอยู่ใน `src/lib/i18n.tsx`
+## License
+
+The original project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for details.
+
+Attribution and modification notices are recorded in [NOTICE](NOTICE) and [third-party notices](public/third-party-notices.txt). Credits are also accessible from the website footer. Font and icon licenses remain alongside their assets.

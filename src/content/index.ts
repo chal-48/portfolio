@@ -10,7 +10,7 @@ type Portfolio = Omit<typeof data, 'portrait' | 'email' | 'github' | 'linkedin' 
   github: string | null
   linkedin: string | null
   otherContacts: { label: string; url: string }[]
-  education: Omit<typeof data.education, 'year' | 'gpa'> & { year: number | null; gpa: string | null }
+  education: Omit<typeof data.education, 'year' | 'gpa'> & { year: number | null; gpa: string | number | null }
   projects: Project[]
 }
 
